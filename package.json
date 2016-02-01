@@ -1,0 +1,15 @@
+{
+  "name": "etl",
+  "version": "1.0.0",
+  "description": "TLX Etl to statistic application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vincent The",
+  "license": "ISC",
+  "dependencies": {
+    "cron": "1.1.0",
+    "mysql": "2.10.2"
+  }
+}
