@@ -9,7 +9,9 @@
   "author": "Vincent The",
   "license": "ISC",
   "dependencies": {
+    "async": "1.5.2",
     "cron": "1.1.0",
-    "mysql": "2.10.2"
+    "mysql": "2.10.2",
+    "underscore": "1.8.3"
   }
 }

@@ -27,4 +27,12 @@ dbConn.jerahmeel = mysql.createPool({
   database: dbConfig.jerahmeel.database
 });
 
+dbConn.db = mysql.createPool({
+  connectionLimit: 100,
+  host: dbConfig.db.host,
+  user: dbConfig.db.user,
+  password: dbConfig.db.password,
+  database: dbConfig.db.database
+});
+
 module.exports = dbConn;

@@ -1,19 +1,19 @@
 var CronJob = require('cron').CronJob;
 
+var problemMigrator = require('./migrator/problemMigrator');
+
 var scheduler = {};
 
-scheduler.test = new CronJob({
+scheduler.importProblem = new CronJob({
   cronTime: '* * * * * *',
   onTick: function () {
-    console.log("tick");
-  },
-  start: true
-});
-
-scheduler.test2 = new CronJob({
-  cronTime: '* * * * * *',
-  onTick: function () {
-    console.log("tock");
+    problemMigrator.migrate(function (err, problemCount) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("success migratng " + problemCount + " problems");
+      }
+    });
   },
   start: true
 });
