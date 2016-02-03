@@ -3,6 +3,7 @@ var CronJob = require('cron').CronJob;
 var problemMigrator = require('./migrator/problemMigrator');
 var userMigrator = require('./migrator/userMigrator');
 var submissionMigrator = require('./migrator/submissionMigrator');
+var gradingMigrator = require('./migrator/gradingMigrator');
 
 var scheduler = {};
 
@@ -41,7 +42,21 @@ scheduler.importSubmission = new CronJob({
       if (err) {
         console.log("error migrating submission: " + err);
       } else {
-        console.log("success migrating " + submissionCount + " submissions")
+        console.log("success migrating " + submissionCount + " submissions");
+      }
+    });
+  },
+  start: true
+});
+
+scheduler.importGrading = new CronJob({
+  cronTIme: '* * * * * *',
+  onTick: function () {
+    gradingMigrator.migrate(100, function (err, gradingCount) {
+      if (err) {
+        console.log("error migrating grading: " + err);
+      } else {
+        console.log("success migrating " + gradingCount + " grading");
       }
     });
   },
