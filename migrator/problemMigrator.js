@@ -5,7 +5,7 @@ var tlxProblemService = require('../services/tlxProblemService');
 
 var problemMigrator = {};
 
-problemMigrator.migrate = function (callback) {
+problemMigrator.migrate = function (limit, callback) {
   async.waterfall([
     function (callback) {
       problemService.getLastProblemId(function (err, lastId) {
@@ -19,7 +19,7 @@ problemMigrator.migrate = function (callback) {
         }
       });
     }, function (lastId, callback) {
-      tlxProblemService.fetchProblemObjectFromJerahmeel(lastId, 100, function (err, problemObjects) {
+      tlxProblemService.fetchProblemObjectFromJerahmeel(lastId, limit, function (err, problemObjects) {
         if (err) {
           callback("error fetching problem records from jerahmeel: " + err);
         } else {
@@ -45,7 +45,7 @@ problemMigrator.migrate = function (callback) {
     }
   ], function (err, problemCount) {
     if (err) {
-      console.log("error migrating problem: " + err);
+      console.log(err);
     } else {
       console.log("success migrating " + problemCount + " problems");
     }

@@ -2,15 +2,16 @@ var CronJob = require('cron').CronJob;
 
 var problemMigrator = require('./migrator/problemMigrator');
 var userMigrator = require('./migrator/userMigrator');
+var submissionMigrator = require('./migrator/submissionMigrator');
 
 var scheduler = {};
 
 scheduler.importProblem = new CronJob({
   cronTime: '* * * * * *',
   onTick: function () {
-    problemMigrator.migrate(function (err, problemCount) {
+    problemMigrator.migrate(100, function (err, problemCount) {
       if (err) {
-        console.log(err);
+        console.log("error migrating problem: " + err);
       } else {
         console.log("success migratng " + problemCount + " problems");
       }
@@ -22,11 +23,25 @@ scheduler.importProblem = new CronJob({
 scheduler.importUser = new CronJob({
   cronTime: '* * * * * *',
   onTick: function () {
-    userMigrator.migrate(function (err, userCount) {
+    userMigrator.migrate(100, function (err, userCount) {
       if (err) {
-        console.log(err);
+        console.log("error migrating user: " + err);
       } else {
         console.log("success migrating " + userCount + " users");
+      }
+    });
+  },
+  start: true
+});
+
+scheduler.importSubmission = new CronJob({
+  cronTime: '* * * * * *',
+  onTick: function () {
+    submissionMigrator.migrate(100, function (err, submissionCount) {
+      if (err) {
+        console.log("error migrating submission: " + err);
+      } else {
+        console.log("success migrating " + submissionCount + " submissions")
       }
     });
   },

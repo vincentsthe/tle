@@ -5,7 +5,7 @@ var tlxUserService = require('../services/tlxUserService');
 
 var userMigrator = {};
 
-userMigrator.migrate = function (callback) {
+userMigrator.migrate = function (limit, callback) {
   async.waterfall([
     function (callback) {
       userService.getLastJophielUserId(function (err, lastId) {
@@ -16,7 +16,7 @@ userMigrator.migrate = function (callback) {
         }
       });
     }, function (lastId, callback) {
-      tlxUserService.fetchUserFromJophiel(lastId, 100, function (err, users) {
+      tlxUserService.fetchUserFromJophiel(lastId, limit, function (err, users) {
         if (err) {
           callback("error retrieving user from jophiel: " + err);
         } else {
@@ -34,7 +34,7 @@ userMigrator.migrate = function (callback) {
     }
   ], function (err, result) {
     if (err) {
-      callback("eror migrating result: " + err);
+      callback(err);
     } else {
       callback(null, result);
     }

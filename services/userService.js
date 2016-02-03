@@ -18,7 +18,13 @@ userService.getLastJophielUserId = function (callback) {
         if (err) {
           callback("error querying db: " + err);
         } else {
-          callback(null, rows[0]["max_id"]);
+          var lastId;
+          if (rows.length) {
+            lastId = rows[0]["max_id"];
+          } else {
+            lastId = 0;
+          }
+          callback(null, lastId);
         }
       });
     }
