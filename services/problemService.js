@@ -31,7 +31,7 @@ problemService.insertProblem = function (problems, callback) {
             console.log(query);
             callback("error inserting to problem: " + err);
           } else {
-            callback(null);
+            callback(null, problems.length);
           }
         });
       }

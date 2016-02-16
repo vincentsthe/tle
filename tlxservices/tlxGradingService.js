@@ -1,4 +1,5 @@
 var dbConnection = require('../dbConnection');
+var Grading = require('../models/Grading');
 
 var tlxGradingService = {};
 
@@ -16,7 +17,18 @@ tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback)
         if (err) {
           callback("eror queryin jerahmeel: " + err);
         } else {
-          callback(null, rows);
+          var gradings = [];
+          for (var i = 0; i < rows.length; i++) {
+            var grading = new Grading();
+            grading.setSubmissionJid(rows[i]["submissionJid"])
+                  .setScore(rows[i]["score"])
+                  .setVerdictCode(rows[i]["verdict_code"])
+                  .setVerdictName(rows[i]["verdict_name"]);
+
+            gradings.push(grading);
+          }
+
+          callback(null, gradings);
         }
       });
     }

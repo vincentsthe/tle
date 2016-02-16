@@ -120,7 +120,7 @@ submissionService.insertSubmission = function (submissions, callback) {
         if (err) {
           callback("error inserting user to db: " + err);
         } else {
-          callback(null, records.length);
+          callback(null, submissions.length);
         }
       });
     }

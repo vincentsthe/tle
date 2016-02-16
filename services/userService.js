@@ -59,7 +59,7 @@ userService.insertUser = function (users, callback) {
           if (err) {
             callback("error inserting user: " + err);
           } else {
-            callback(null, values.length);
+            callback(null, users.length);
           }
         });
       }
