@@ -48,7 +48,7 @@ problemMigrator.migrate = function (limit, callback) {
         callback(null, 0, 0);
       }
     }, function (problemCount, maxId, callback) {
-      lastIdService.updateLastId(lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY, maxId, function (err, lastId) {
+      lastIdService.updateLastId(lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY, maxId, function (err) {
         if (err) {
           callback("error updateing last id for " + lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY + ": " + err);
         } else {

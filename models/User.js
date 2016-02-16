@@ -4,6 +4,9 @@ var User = function () {
   this.userJid = "";
   this.username = "";
   this.name = "";
+  this.acceptedSubmission = 0;
+  this.totalSubmission = 0;
+  this.acceptedProblem = 0;
 };
 
 User.prototype.setId = function (id) {
@@ -31,7 +34,22 @@ User.prototype.setName = function (name) {
   return this;
 };
 
-User.prototype.getId = function (id) {
+User.prototype.setAcceptedSubmission = function (acceptedSubmission) {
+  this.acceptedSubmission = acceptedSubmission;
+  return this;
+};
+
+User.prototype.setTotalSubmission = function (totalSubmission) {
+  this.totalSubmission = totalSubmission;
+  return this;
+};
+
+User.prototype.setAcceptedProblem = function (acceptedProblem) {
+  this.acceptedProblem = acceptedProblem;
+  return this;
+};
+
+User.prototype.getId = function () {
   return this.id;
 };
 
@@ -49,6 +67,18 @@ User.prototype.getUsername = function () {
 
 User.prototype.getName = function () {
   return this.name;
+};
+
+User.prototype.getAcceptedSubmission = function () {
+  return this.acceptedSubmission;
+};
+
+User.prototype.getTotalSubmission = function () {
+  return this.totalSubmission;
+};
+
+User.prototype.getAcceptedProblem = function () {
+  return this.acceptedProblem;
 };
 
 module.exports = User;
