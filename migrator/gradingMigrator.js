@@ -1,7 +1,7 @@
 var async = require('async');
 
 var gradingService = require('../services/gradingServices');
-var tlxGradingService = require('../services/tlxGradingService');
+var tlxGradingService = require('../tlxservices/tlxGradingService');
 
 var gradingMigrator = {};
 

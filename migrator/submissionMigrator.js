@@ -1,7 +1,7 @@
 var async = require('async');
 
 var submissionService = require('../services/submissionService');
-var tlxSubmissionService = require('../services/tlxSubmissionService');
+var tlxSubmissionService = require('../tlxservices/tlxSubmissionService');
 
 var submissionMigrator = {};
 
