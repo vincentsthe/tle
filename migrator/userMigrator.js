@@ -28,7 +28,7 @@ userMigrator.migrate = function (limit, callback) {
         if (err) {
           callback("error inserting user: " + err);
         } else {
-          callback(nul, result);
+          callback(null, result);
         }
       });
     }

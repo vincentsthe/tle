@@ -1,6 +1,6 @@
 var User = function () {
   this.id = "";
-  this.jophielUserJid = "";
+  this.jophielUserId = "";
   this.userJid = "";
   this.username = "";
   this.name = "";
@@ -14,12 +14,12 @@ User.prototype.setId = function (id) {
   return this;
 };
 
-User.prototype.setJophielUserJid = function (jophielUserJid) {
-  this.jophielUserJid = jophielUserJid;
+User.prototype.setJophielUserId = function (jophielUserId) {
+  this.jophielUserId = jophielUserId;
   return this;
 };
 
-User.prototype.setUseJid = function (userJid) {
+User.prototype.setUserJid = function (userJid) {
   this.userJid = userJid;
   return this;
 };
@@ -53,8 +53,8 @@ User.prototype.getId = function () {
   return this.id;
 };
 
-User.prototype.getJophielUserJid = function () {
-  return this.jophielUserJid;
+User.prototype.getJophielUserId = function () {
+  return this.jophielUserId;
 };
 
 User.prototype.getUserJid = function () {

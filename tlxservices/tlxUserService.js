@@ -1,4 +1,5 @@
 var dbConnection = require('../dbConnection.js');
+var User = require('../models/User');
 
 var tlxUserService = {};
 
@@ -18,7 +19,16 @@ tlxUserService.fetchUserFromJophiel = function (lastId, limit, callback) {
         if (err) {
           callback("error querrying jophiel: " + err);
         } else {
-          callback(null, rows);
+          var users = [];
+          for (var i = 0; i < rows.length; i++) {
+            var user = new User();
+            user.setJophielUserId(rows[i]["id"])
+                .setUserJid(rows[i]["jid"])
+                .setUsername(rows[i]["username"])
+                .setName(rows[i]["name"]);
+          }
+
+          callback(null, users);
         }
       });
     }

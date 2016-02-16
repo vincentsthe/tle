@@ -31,14 +31,17 @@ userService.getLastJophielUserId = function (callback) {
   });
 };
 
-userService.insertUser = function (userRecords, callback) {
+userService.insertUser = function (users, callback) {
   if (userRecords.length) {
-    var values = _.map(userRecords, function (record) {
+    var values = _.map(users, function (user) {
       return [
-        record.jophiel_id,
-        record.jid,
-        record.username,
-        record.name
+        user.getJophielUserId(),
+        user.getUserJid(),
+        user.getUsername(),
+        user.getName(),
+        user.getAcceptedSubmission(),
+        user.getTotalSubmission(),
+        user.getAcceptedProblem()
       ];
     });
 
@@ -48,7 +51,7 @@ userService.insertUser = function (userRecords, callback) {
         callback("error connecting to db: " + err)
       } else {
         var query = "INSERT INTO user"
-                    + " (jophiel_user_id, user_jid, username, name)"
+                    + " (jophiel_user_id, user_jid, username, name, accepted_submission, total_submission, accepted_problem)"
                     + " VALUES ?";
 
         connection.query(query, [values], function (err) {
