@@ -6,6 +6,7 @@ var tlxSubmissionService = {};
 tlxSubmissionService.fetchSubmissionFromJerahmeel = function (lastId, limit, callback) {
   dbConnection.jerahmeel.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to jerahmeel: " + err);
     } else {
       var query = "SELECT id, jid, problemJid, userCreate userJid, gradingLanguage language, timeCreate `timestamp`"
@@ -14,6 +15,7 @@ tlxSubmissionService.fetchSubmissionFromJerahmeel = function (lastId, limit, cal
                   + " LIMIT " + limit;
 
       connection.query(query, function (err, rows) {
+        connection.release();
         if (err) {
           callback("error querying jerahmeel: " + err);
         } else {

@@ -8,6 +8,7 @@ var gradingService = {};
 gradingService.insertGradingData = function (gradings, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to db: " + err);
     } else {
       var values = _.map(gradings, function (grading) {
@@ -23,6 +24,7 @@ gradingService.insertGradingData = function (gradings, callback) {
                   + " VALUES ?";
 
       connection.query(query, values, function (err) {
+        connection.release();
         if (err) {
           callback("error inserting to grading: " + err);
         } else {
@@ -36,6 +38,7 @@ gradingService.insertGradingData = function (gradings, callback) {
 gradingService.getGradingData = function (limit, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to db: " + err);
     } else {
       var query = "SELECT id, submission_jid, score, verdict_code, verdict_name"
@@ -44,6 +47,7 @@ gradingService.getGradingData = function (limit, callback) {
                   + " LIMIT " + limit;
 
       connection.query(query, function (err, rows) {
+        connection.release();
         if (err) {
           console.log("error querying db: " + err);
         } else {
@@ -67,12 +71,14 @@ gradingService.getGradingData = function (limit, callback) {
 gradingService.deleteGrading = function (id, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       console.log("error connecting to db: " + err);
     } else {
       var query = "DELETE FROM grading"
                   + " WHERE id=" + id;
 
       connection.query(query, function (err) {
+        connection.release();
         callback(err);
       });
     }

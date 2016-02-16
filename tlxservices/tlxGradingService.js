@@ -6,6 +6,7 @@ var tlxGradingService = {};
 tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback) {
   dbConnection.jerahmeel.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to jerahmeel: " + err);
     } else {
       var query = "SELECT id, submissionJid, score, verdict_code, verdict_name"
@@ -14,6 +15,7 @@ tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback)
                   + " LIMIT " + limit;
 
       connection.query(query, function (err, rows) {
+        connection.release();
         if (err) {
           callback("eror queryin jerahmeel: " + err);
         } else {

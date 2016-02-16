@@ -8,6 +8,7 @@ lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY = "problemset_problem";
 var insertKeyLastId  = function (key, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to db: ");
     } else {
       var record = {
@@ -18,6 +19,7 @@ var insertKeyLastId  = function (key, callback) {
       var query = "INSERT INTO last_id SET ?";
 
       connection.query(query, record, function (err) {
+        connection.release();
         if (err) {
           callback("error inserting to last_id: " + err)
         } else {
@@ -31,6 +33,7 @@ var insertKeyLastId  = function (key, callback) {
 lastIdService.getKeyLastId = function (key, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to db: " + err);
     } else {
       var query = "SELECT value"
@@ -38,6 +41,7 @@ lastIdService.getKeyLastId = function (key, callback) {
         + " WHERE field ='" + key + "'";
 
       connection.query(query, function (err, rows) {
+        connection.release();
         if (err) {
           callback("error querrying db: " + err);
         } else {
@@ -61,6 +65,7 @@ lastIdService.getKeyLastId = function (key, callback) {
 lastIdService.updateLastId = function (key, lastId, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to db: " + err);
     } else {
       var value = {
@@ -71,6 +76,7 @@ lastIdService.updateLastId = function (key, lastId, callback) {
         + " WHERE field = '" + key + "'";
 
       connection.query(query, value, function (err) {
+        connection.release();
         if (err) {
           callback("error updating last_id: " + err);
         } else {

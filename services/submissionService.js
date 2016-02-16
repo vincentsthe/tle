@@ -7,12 +7,14 @@ var submissionService = {};
 submissionService.getLastJerahmeelId = function (callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("Error connecting to db: " + err);
     } else {
       var query = "SELECT MAX(jerahmeel_submission_id) max_id"
                   + " FROM submission";
 
       connection.query(query, function (err, rows) {
+        connection.release();
         if (err) {
           callback("error querying db: " + err);
         } else {
@@ -33,6 +35,7 @@ submissionService.getLastJerahmeelId = function (callback) {
 submissionService.fillProblemSlug = function (submissions, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to db: " + err);
     } else {
       var problemJids = _.map(submissions, function (submission) {
@@ -43,6 +46,7 @@ submissionService.fillProblemSlug = function (submissions, callback) {
                   + " WHERE problem_jid IN (" + problemJids.join(",") + ")";
 
       connection.query(query, function (err, rows) {
+        connection.release();
         if (err) {
           callback("error querying db: " + err);
         } else {
@@ -65,6 +69,7 @@ submissionService.fillProblemSlug = function (submissions, callback) {
 submissionService.fillUsername = function (submissions, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to db: " + err);
     } else {
       var userJids = _.map(submissions, function (submission) {
@@ -75,6 +80,7 @@ submissionService.fillUsername = function (submissions, callback) {
                   + " WHERE user_jid IN (" + userJids.join(",") + ")";
 
       connection.query(query, function (err, rows) {
+        connection.release();
         if (err) {
           callback("error querrying db: " + err);
         } else {
@@ -97,6 +103,7 @@ submissionService.fillUsername = function (submissions, callback) {
 submissionService.insertSubmission = function (submissions, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to db: " + err);
     } else {
       var values = _.map(submissions, function (submission) {
@@ -117,6 +124,7 @@ submissionService.insertSubmission = function (submissions, callback) {
                   + " VALUES ?";
 
       connection.query(query, [values], function (err) {
+        connection.release();
         if (err) {
           callback("error inserting user to db: " + err);
         } else {
@@ -130,6 +138,7 @@ submissionService.insertSubmission = function (submissions, callback) {
 submissionService.updateSubmissionGrading = function (grading, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
+      connection.release();
       callback("error connecting to db: " + err);
     } else {
       var query = "UPDATE submission"
@@ -142,6 +151,7 @@ submissionService.updateSubmissionGrading = function (grading, callback) {
         verdict_name: grading.getVerdictName(),
         submission_jid: grading.getSubmissionJid()
       }, function (err) {
+        connection.release();
         callback(err);
       });
     }
