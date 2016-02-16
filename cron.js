@@ -21,46 +21,46 @@ scheduler.importProblem = new CronJob({
   start: true
 });
 
-scheduler.importUser = new CronJob({
-  cronTime: '* * * * * *',
-  onTick: function () {
-    userMigrator.migrate(100, function (err, userCount) {
-      if (err) {
-        console.log("error migrating user: " + err);
-      } else {
-        console.log("success migrating " + userCount + " users");
-      }
-    });
-  },
-  start: false
-});
-
-scheduler.importSubmission = new CronJob({
-  cronTime: '* * * * * *',
-  onTick: function () {
-    submissionMigrator.migrate(100, function (err, submissionCount) {
-      if (err) {
-        console.log("error migrating submission: " + err);
-      } else {
-        console.log("success migrating " + submissionCount + " submissions");
-      }
-    });
-  },
-  start: false
-});
-
-scheduler.importGrading = new CronJob({
-  cronTIme: '* * * * * *',
-  onTick: function () {
-    gradingMigrator.migrate(100, function (err, gradingCount) {
-      if (err) {
-        console.log("error migrating grading: " + err);
-      } else {
-        console.log("success migrating " + gradingCount + " grading");
-      }
-    });
-  },
-  start: false
-});
+//scheduler.importUser = new CronJob({
+//  cronTime: '* * * * * *',
+//  onTick: function () {
+//    userMigrator.migrate(100, function (err, userCount) {
+//      if (err) {
+//        console.log("error migrating user: " + err);
+//      } else {
+//        console.log("success migrating " + userCount + " users");
+//      }
+//    });
+//  },
+//  start: false
+//});
+//
+//scheduler.importSubmission = new CronJob({
+//  cronTime: '* * * * * *',
+//  onTick: function () {
+//    submissionMigrator.migrate(100, function (err, submissionCount) {
+//      if (err) {
+//        console.log("error migrating submission: " + err);
+//      } else {
+//        console.log("success migrating " + submissionCount + " submissions");
+//      }
+//    });
+//  },
+//  start: false
+//});
+//
+//scheduler.importGrading = new CronJob({
+//  cronTIme: '* * * * * *',
+//  onTick: function () {
+//    gradingMigrator.migrate(100, function (err, gradingCount) {
+//      if (err) {
+//        console.log("error migrating grading: " + err);
+//      } else {
+//        console.log("success migrating " + gradingCount + " grading");
+//      }
+//    });
+//  },
+//  start: false
+//});
 
 module.exports = scheduler;

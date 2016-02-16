@@ -1,10 +1,11 @@
 var _ = require("underscore");
 
 var dbConnection = require('../dbConnection');
+var Problem = require('../models/Problem');
 
 var tlxProblemService = {};
 
-tlxProblemService.fetchProblemObjectFromJerahmeel = function (lastId, limit, callback) {
+tlxProblemService.fetchProblemFromJerahmeelProblemset = function (lastId, limit, callback) {
   dbConnection.jerahmeel.getConnection(function (err, connection) {
     if (err) {
       connection.release();
@@ -20,29 +21,31 @@ tlxProblemService.fetchProblemObjectFromJerahmeel = function (lastId, limit, cal
         if (err) {
           callback("error querying jerahmeel " + err);
         } else {
-          var problemsObject = {};
+          var problems = [];
 
           for (var i = 0; i < rows.length; i++) {
-            problemsObject[rows[i]["problemJid"]] = {
-              "jerahmeel_id": rows[i]["id"],
-              "problem_set_id": rows[i]["problemset_id"]
-            };
+            var problem = new Problem();
+            problem.setProblemJid(rows[i]["problemJid"])
+                  .setUrl("/problemsets/" + rows[i]["problemset_id"] + "/problems/" + rows[i]["id"] + "/");
+
+            problems.push(problem);
           }
-          callback(null, problemsObject);
+
+          callback(null, problems);
         }
       });
     }
   });
 };
 
-tlxProblemService.fetchProblemFromJerahmeelRecord = function (jerahmeelProblemsObject, callback) {
+tlxProblemService.fillProblemSlugFromSandalphon = function (problems, callback) {
   dbConnection.sandalphon.getConnection(function (err, connection) {
     if (err) {
       connection.release();
       callback("Error connecting to Sandalphon");
     } else {
-      var problemJids = _.map(jerahmeelProblemsObject, function (value, key) {
-        return "'" + key + "'";
+      var problemJids = _.map(problems, function (value) {
+        return "'" + value.getProblemJid() + "'";
       });
 
       var query = "SELECT id, jid, slug FROM sandalphon_problem"
@@ -53,12 +56,18 @@ tlxProblemService.fetchProblemFromJerahmeelRecord = function (jerahmeelProblemsO
         if (err) {
           callback("error query sandalphon: " + query)
         } else {
+          var problemSlugs = {};
+          var maxId = 0;
           for (var i = 0; i < rows.length; i++) {
-            rows[i]["jerahmeel_id"] = jerahmeelProblemsObject[rows[i]["jid"]]["id"];
-            rows[i]["problemset_id"] = jerahmeelProblemsObject[rows[i]["jid"]]["problemset_id"];
+            problemSlugs[rows[i]["jid"]] = rows[i]["slug"];
+            maxId = Math.max(maxId, rows[i]["id"]);
           }
 
-          callback(null, rows);
+          for (var i = 0; i < problems.length; i++) {
+            problems[i].setSlug(problemSlugs[problems[i].getProblemJid()]);
+          }
+
+          callback(null, rows, maxId);
         }
       });
     }

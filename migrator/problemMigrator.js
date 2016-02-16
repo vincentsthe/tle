@@ -1,5 +1,6 @@
 var async = require('async');
 
+var lastIdService = require('../services/lastIdService');
 var problemService = require('../services/problemService');
 var tlxProblemService = require('../tlxservices/tlxProblemService');
 
@@ -8,7 +9,7 @@ var problemMigrator = {};
 problemMigrator.migrate = function (limit, callback) {
   async.waterfall([
     function (callback) {
-      problemService.getLastProblemId(function (err, lastId) {
+      lastIdService.getKeyLastId(lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY, function (err, lastId) {
         if (err) {
           callback("error get last problem id: " + err);
         } else {
@@ -19,36 +20,44 @@ problemMigrator.migrate = function (limit, callback) {
         }
       });
     }, function (lastId, callback) {
-      tlxProblemService.fetchProblemObjectFromJerahmeel(lastId, limit, function (err, problemObjects) {
+      tlxProblemService.fetchProblemFromJerahmeelProblemset(lastId, limit, function (err, problems, maxId) {
         if (err) {
           callback("error fetching problem records from jerahmeel: " + err);
         } else {
-          callback(null, problemObjects);
+          callback(null, problems, maxId);
         }
       });
-    },function (problemObjects, callback) {
-      tlxProblemService.fetchProblemFromJerahmeelRecord(problemObjects, function (err, problemRecords) {
+    },function (problems, maxId, callback) {
+      tlxProblemService.fillProblemSlugFromSandalphon(problems, function (err, problemRecords) {
         if (err) {
           callback("error fetching problem record from sandalphon: " + err);
         } else {
-          callback(null, problemRecords);
+          callback(null, problemRecords, maxId);
         }
       });
-    }, function (problems, callback) {
-      problemService.insertProblem(problems, function (err) {
+    }, function (problems, maxId, callback) {
+      if (maxId) {
+        problemService.insertProblem(problems, function (err) {
+          if (err) {
+            callback("error inserting to db: " + err);
+          } else {
+            callback(null, problems.length, maxId);
+          }
+        });
+      } else {
+        callback(null, 0, 0);
+      }
+    }, function (problemCount, maxId, callback) {
+      lastIdService.updateLastId(lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY, maxId, function (err, lastId) {
         if (err) {
-          callback("error inserting to db: " + err);
+          callback("error updateing last id for " + lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY + ": " + err);
         } else {
-          callback(null, problems.length);
+          callback(null, problemCount);
         }
-      });
+      })
     }
   ], function (err, problemCount) {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("success migrating " + problemCount + " problems");
-    }
+    callback(err, problemCount);
   });
 };
 

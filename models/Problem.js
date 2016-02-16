@@ -1,6 +1,5 @@
 var Problem = function () {
   this.id = 0;
-  this.jerahmeelProblemJid = "";
   this.problemJid = "";
   this.slug = "";
   this.acceptedUser = 0;
@@ -11,11 +10,6 @@ var Problem = function () {
 
 Problem.prototype.setId = function (id) {
   this.id = id;
-  return this;
-};
-
-Problem.prototype.setJerahmeelProblemJid = function (jerahmeelProblemJid) {
-  this.jerahmeelProblemJid = jerahmeelProblemJid;
   return this;
 };
 
@@ -51,10 +45,6 @@ Problem.prototype.setUrl = function (url) {
 
 Problem.prototype.getId = function () {
   return this.id;
-};
-
-Problem.prototype.getJerahmeelProblemJid = function () {
-  return this.jerahmeelProblemJid;
 };
 
 Problem.prototype.getProblemJid = function () {

@@ -2,38 +2,16 @@ var dbConnection = require('../dbConnection');
 
 var problemService = {};
 
-problemService.getLastProblemId = function (callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db");
-    } else {
-      var query = "SELECT MAX(jerahmeel_problem_id) max_id"
-                  + " FROM problem";
-
-      connection.query(query, function (err, rows) {
-        connection.release();
-        if (err) {
-          callback("error query ing db: " + query);
-        } else {
-          callback(null, rows[0]["max_id"]);
-        }
-      });
-    }
-  });
-};
-
-problemService.insertProblem = function (problemObjects, callback) {
+problemService.insertProblem = function (problems, callback) {
   if (problems.length) {
-    var values = _.map(problemObjects, function (record, problemJid) {
+    var values = _.map(problems, function (problem) {
       return [
-        record["jerahmeel_id"],
-        problemJid,
-        record["slug"],
-        0,
-        0,
-        0,
-        record["problemset_id"]
+        problem.getProblemJid(),
+        problem.getSlug(),
+        problem.getAcceptedUser(),
+        problem.getTotalSubmission(),
+        problem.getAcceptedSubmission(),
+        problem.getUrl()
       ];
     });
 
@@ -43,7 +21,7 @@ problemService.insertProblem = function (problemObjects, callback) {
         callback("error connecting to db");
       } else {
         var query = "INSERT INTO problem"
-          + " (problem_id, problem_jid, slug, accepted_user, total_submission, accepted_submission, problemset_id)"
+          + " (problem_jid, slug, accepted_user, total_submission, accepted_submission, url)"
           + " VALUES ?";
 
         connection.query(query, [values], function (err) {
