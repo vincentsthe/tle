@@ -1,4 +1,5 @@
 var dbConnection = require('../dbConnection');
+var Submission = require('../models/Submission');
 
 var tlxSubmissionService = {};
 
@@ -16,7 +17,19 @@ tlxSubmissionService.fetchSubmissionFromJerahmeel = function (lastId, limit, cal
         if (err) {
           callback("error querying jerahmeel: " + err);
         } else {
-          callback(null, rows);
+          var submissions = [];
+          for (var i = 0; i < rows.length; i++) {
+            var submission = new Submission();
+            submission.setJerahmeelSubmissionId(rows[i]["id"])
+                      .setProblemJid(rows[i]["problemJid"])
+                      .setUserJid(rows[i]["userJid"])
+                      .setLanguage(rows[i]["language"])
+                      .setTime(rows[i]["timestamp"]);
+
+            submissions.push(submission);
+          }
+
+          callback(null, submissions);
         }
       });
     }

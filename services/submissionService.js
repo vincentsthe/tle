@@ -30,13 +30,13 @@ submissionService.getLastJerahmeelId = function (callback) {
   });
 };
 
-submissionService.fillProblemSlug = function (records, callback) {
+submissionService.fillProblemSlug = function (submissions, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
       callback("error connecting to db: " + err);
     } else {
-      var problemJids = _.map(records, function (data) {
-        return "'" + data.problemJid + "'";
+      var problemJids = _.map(submissions, function (submission) {
+        return "'" + submission.getProblemJid() + "'";
       });
       var query = "SELECT problem_jid, slug"
                   + " FROM problem"
@@ -51,24 +51,24 @@ submissionService.fillProblemSlug = function (records, callback) {
             problemMap[rows[i]["problem_jid"]] = rows[i]["slug"];
           }
 
-          for (var i = 0; i < records.length; i++) {
-            records["problem_slug"] = problemMap[records["problem_slug"]];
+          for (var i = 0; i < submissions.length; i++) {
+            submissions[i].setSlug(problemMap[submissions[i].getProblemJid()]);
           }
 
-          callback(null, records);
+          callback(null, submissions);
         }
       });
     }
   });
 };
 
-submissionService.fillUsername = function (records, callback) {
+submissionService.fillUsername = function (submissions, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
       callback("error connecting to db: " + err);
     } else {
-      var userJids = _.map(records, function (data) {
-        return "'" + data.userJid + "'";
+      var userJids = _.map(submissions, function (submission) {
+        return "'" + submission.getUserJid() + "'";
       });
       var query = "SELECT user_jid, username"
                   + " FROM user"
@@ -83,32 +83,32 @@ submissionService.fillUsername = function (records, callback) {
             userMap[rows[i]["user_jid"]] = rows[i]["username"];
           }
 
-          for (var i = 0; i < records.length; i++) {
-            records["username"] = userMap["user_jid"];
+          for (var i = 0; i < submissions.length; i++) {
+            submissions[i].setUsername(userMap[submissions[i].getUserJid()]);
           }
 
-          callback(null, records);
+          callback(null, submissions);
         }
       });
     }
   });
 };
 
-submissionService.insertSubmission = function (records, callback) {
+submissionService.insertSubmission = function (submissions, callback) {
   dbConnection.db.getConnection(function (err, connection) {
     if (err) {
       callback("error connecting to db: " + err);
     } else {
-      var values = _.map(records, function (data) {
+      var values = _.map(submissions, function (submission) {
         return [
-          data.id,
-          data.jid,
-          data.userJid,
-          data.username,
-          data.timestamp,
-          data.language,
-          data.problemJid,
-          data.problem_slug
+          submission.getJerahmeelSubmissionId(),
+          submission.getSubmissionJid(),
+          submission.getUserJid(),
+          submission.getUsername(),
+          submission.getTimeStamp(),
+          submission.getLanguage(),
+          submission.getProblemJid(),
+          submission.getProblemSlug()
         ];
       });
 

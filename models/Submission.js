@@ -43,68 +43,72 @@ Submission.prototype.setUserJid = function (userJid) {
   return this;
 };
 
-Submission.setUsername = function (username) {
+Submission.prototype.setUsername = function (username) {
   this.username = username;
   return this;
 };
 
-Submission.setTimestamp = function (timestamp) {
+Submission.prototype.setTimestamp = function (timestamp) {
   this.timestamp = timestamp;
   return this;
 };
 
-Submission.setLanguage = function (language) {
+Submission.prototype.setLanguage = function (language) {
   this.language = language;
   return this;
 };
 
-Submission.setProblemJid = function (problemJid) {
+Submission.prototype.setProblemJid = function (problemJid) {
   this.problemJid = problemJid;
   return this;
 };
 
-Submission.setProblemSlug = function (problemSlug) {
+Submission.prototype.setProblemSlug = function (problemSlug) {
   this.problemSlug = problemSlug;
   return this;
 };
 
-Submission.getId = function () {
+Submission.prototype.getId = function () {
   return this.id;
 };
 
-Submission.getJerahmeelSubmissionJid = function () {
+Submission.prototype.getJerahmeelSubmissionId = function () {
   return this.jerahmeelSubmissionId;
 };
 
-Submission.getVerdictCode = function () {
+Submission.prototype.getVerdictCode = function () {
   return this.verdictCode;
 };
 
-Submission.getVerdictName = function () {
+Submission.prototype.getVerdictName = function () {
   return this.verdictName;
 };
 
-Submission.getScore = function () {
+Submission.prototype.getScore = function () {
   return this.score;
 };
 
-Submission.getUserJid = function () {
+Submission.prototype.getUserJid = function () {
   return this.userJid;
 };
 
-Submission.getUsername = function () {
+Submission.prototype.getUsername = function () {
   return this.username;
 };
 
-Submission.getTimeStamp = function () {
+Submission.prototype.getTimeStamp = function () {
   return this.timestamp;
 };
 
-Submission.getProblemJid = function () {
+Submission.prototype.getLanguage = function () {
+  return this.language;
+};
+
+Submission.prototype.getProblemJid = function () {
   return this.problemJid;
 };
 
-Submission.getProblemSlug = function () {
+Submission.prototype.getProblemSlug = function () {
   return this.problemSlug;
 };
 

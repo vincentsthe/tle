@@ -26,6 +26,8 @@ tlxUserService.fetchUserFromJophiel = function (lastId, limit, callback) {
                 .setUserJid(rows[i]["jid"])
                 .setUsername(rows[i]["username"])
                 .setName(rows[i]["name"]);
+
+            users.push(user);
           }
 
           callback(null, users);
