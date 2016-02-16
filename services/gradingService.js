@@ -1,6 +1,7 @@
 var _ = require('underscore');
 
 var dbConnection = require('../dbConnection');
+var Grading = require('../models/Grading');
 
 var gradingService = {};
 
@@ -27,6 +28,52 @@ gradingService.insertGradingData = function (gradings, callback) {
         } else {
           callback(null, gradings.length);
         }
+      });
+    }
+  });
+};
+
+gradingService.getGradingData = function (limit, callback) {
+  dbConnection.db.getConnection(function (err, connection) {
+    if (err) {
+      callback("error connecting to db: " + err);
+    } else {
+      var query = "SELECT id, submission_jid, score, verdict_code, verdict_name"
+                  + " FROM grading"
+                  + " ORDER BY id ASC"
+                  + " LIMIT " + limit;
+
+      connection.query(query, function (err, rows) {
+        if (err) {
+          console.log("error querying db: " + err);
+        } else {
+          var gradings = [];
+          for (var i = 0; i < rows.length; i++) {
+            var grading = new Grading();
+            grading.setId(rows[0]["id"])
+                  .setSubmissionJid(rows[0]["submission_jid"])
+                  .setScore(rows[0]["score"])
+                  .setVerdictCode(rows[0]["verdict_code"])
+                  .setVerdictName(rows[0]["verdict_name"]);
+          }
+
+          callback(null, gradings);
+        }
+      });
+    }
+  });
+};
+
+gradingService.deleteGrading = function (id, callback) {
+  dbConnection.db.getConnection(function (err, connection) {
+    if (err) {
+      console.log("error connecting to db: " + err);
+    } else {
+      var query = "DELETE FROM grading"
+                  + " WHERE id=" + id;
+
+      connection.query(query, function (err) {
+        callback(err);
       });
     }
   });

@@ -127,4 +127,25 @@ submissionService.insertSubmission = function (submissions, callback) {
   });
 };
 
+submissionService.updateSubmissionGrading = function (grading, callback) {
+  dbConnection.db.getConnection(function (err, connection) {
+    if (err) {
+      callback("error connecting to db: " + err);
+    } else {
+      var query = "UPDATE submission"
+                  + " SET score=:score, verdict_code=:verdict_code, verdict_name=:verdict_name"
+                  + " WHERE submission_jid=:submission_jid";
+
+      connection.query(query, {
+        score: grading.getScore(),
+        verdict_code: grading.getVerdictCode(),
+        verdict_name: grading.getVerdictName(),
+        submission_jid: grading.getSubmissionJid()
+      }, function (err) {
+        callback(err);
+      });
+    }
+  });
+};
+
 module.exports = submissionService;

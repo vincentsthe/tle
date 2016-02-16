@@ -11,7 +11,7 @@ gradingMigrator.migrate = function (limit, callback) {
     function (callback) {
       lastIdService.getKeyLastId(lastIdService.GRADING_LAST_ID_KEY, function (err, lastId) {
         callback(err, lastId);
-      };
+      });
     }, function (lastId, callback) {
       tlxGradingService.fetchGradingFromJerahmeel(lastId, limit, function (err, records) {
         callback(err, records);
