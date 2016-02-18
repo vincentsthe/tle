@@ -4,6 +4,7 @@ var lastIdService = {};
 
 lastIdService.GRADING_LAST_ID_KEY = "grading";
 lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY = "problemset_problem";
+lastIdService.COURSE_PROBLEM_LAST_ID_KEY = "course_problem";
 
 var insertKeyLastId  = function (key, callback) {
   dbConnection.db.getConnection(function (err, connection) {
@@ -63,28 +64,32 @@ lastIdService.getKeyLastId = function (key, callback) {
 };
 
 lastIdService.updateLastId = function (key, lastId, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: " + err);
-    } else {
-      var value = {
-        value: lastId
-      };
-      var query = "UPDATE last_id"
-        + " SET value=:value"
-        + " WHERE field = '" + key + "'";
-
-      connection.query(query, value, function (err) {
+  if (lastId) {
+    dbConnection.db.getConnection(function (err, connection) {
+      if (err) {
         connection.release();
-        if (err) {
-          callback("error updating last_id: " + err);
-        } else {
-          callback(null);
-        }
-      });
-    }
-  });
+        callback("error connecting to db: " + err);
+      } else {
+        var value = {
+          value: lastId
+        };
+        var query = "UPDATE last_id"
+          + " SET value=:value"
+          + " WHERE field = '" + key + "'";
+
+        connection.query(query, value, function (err) {
+          connection.release();
+          if (err) {
+            callback("error updating last_id: " + err);
+          } else {
+            callback(null);
+          }
+        });
+      }
+    });
+  } else {
+    callback(null);
+  }
 };
 
 module.exports = lastIdService;
