@@ -38,7 +38,6 @@ problemMigrator.migrate = function (limit, callback) {
           console.log("error fetching problem from course");
           callback(null, problems, problemsetMaxId, 0);
         } else {
-          // TODO:
           callback(null, problems, problemsetMaxId, courseMaxId);
         }
       });

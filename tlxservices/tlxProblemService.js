@@ -66,7 +66,8 @@ tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, cal
           for (var i = 0; i < rows.length; i++) {
             var problem = new Problem();
             maxId = Math.max(maxId, rows[i]["id"]);
-            problem.setProblemJid(rows[i]["problem_jid"]);
+            problem.setProblemJid(rows[i]["problem_jid"])
+                  .setUrl("/training/curriculum/" + rows[i]["curriculum_id"] + "/courses/" + rows[i]["course_id"] + "/sessions/" + rows[i]["session_id"] + "/problems/" + rows[i]["session_problem_id"]);
 
             problems.push(problem);
           }
