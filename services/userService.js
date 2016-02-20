@@ -19,7 +19,7 @@ userService.getLastJophielUserId = function (callback) {
           callback("error querying db: " + err);
         } else {
           var lastId;
-          if (rows.length) {
+          if (rows.length && rows[0]["max_id"]) {
             lastId = rows[0]["max_id"];
           } else {
             lastId = 0;
@@ -32,7 +32,7 @@ userService.getLastJophielUserId = function (callback) {
 };
 
 userService.insertUser = function (users, callback) {
-  if (userRecords.length) {
+  if (users.length) {
     var values = _.map(users, function (user) {
       return [
         user.getJophielUserId(),

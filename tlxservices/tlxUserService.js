@@ -22,7 +22,7 @@ tlxUserService.fetchUserFromJophiel = function (lastId, limit, callback) {
           var users = [];
           for (var i = 0; i < rows.length; i++) {
             var user = new User();
-            user.setJophielUserId(rows[i]["id"])
+            user.setJophielUserId(rows[i]["jophiel_id"])
                 .setUserJid(rows[i]["jid"])
                 .setUsername(rows[i]["username"])
                 .setName(rows[i]["name"]);

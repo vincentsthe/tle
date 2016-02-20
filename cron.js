@@ -18,7 +18,7 @@ scheduler.importProblem = new CronJob({
       }
     });
   },
-  start: true
+  start: false
 });
 
 scheduler.importUser = new CronJob({
@@ -27,12 +27,12 @@ scheduler.importUser = new CronJob({
     userMigrator.migrate(100, function (err, userCount) {
       if (err) {
         console.log("error migrating user: " + err);
-      } else {
+      } else if (userCount) {
         console.log("success migrating " + userCount + " users");
       }
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.importSubmission = new CronJob({
