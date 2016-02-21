@@ -9,7 +9,7 @@ tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback)
       connection.release();
       callback("error connecting to jerahmeel: " + err);
     } else {
-      var query = "SELECT id, submissionJid, score, verdict_code, verdict_name"
+      var query = "SELECT id, submissionJid, score, verdictCode, verdictName"
                   + " FROM jerahmeel_programming_grading"
                   + " WHERE id > " + lastId
                   + " LIMIT " + limit;
@@ -17,10 +17,14 @@ tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback)
       connection.query(query, function (err, rows) {
         connection.release();
         if (err) {
-          callback("eror queryin jerahmeel: " + err);
+          callback("eror querying jerahmeel: " + err);
         } else {
           var gradings = [];
+          var maxId = 0;
+
           for (var i = 0; i < rows.length; i++) {
+            maxId = Math.max(maxId, rows[i]["id"]);
+
             var grading = new Grading();
             grading.setSubmissionJid(rows[i]["submissionJid"])
                   .setScore(rows[i]["score"])
@@ -30,7 +34,7 @@ tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback)
             gradings.push(grading);
           }
 
-          callback(null, gradings);
+          callback(null, gradings, maxId);
         }
       });
     }

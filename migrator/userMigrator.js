@@ -16,7 +16,7 @@ userMigrator.migrate = function (limit, callback) {
         }
       });
     }, function (lastId, callback) {
-      tlxUserService.fetchUserFromJophiel(lastId, limit, function (err, users) {
+      tlxUserService.fetchUserFromJophielFromLastId(lastId, limit, function (err, users) {
         if (err) {
           callback("error retrieving user from jophiel: " + err);
         } else {

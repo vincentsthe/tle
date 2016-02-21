@@ -1,4 +1,5 @@
 var dbConnection = require('../dbConnection');
+var LastIdModel = require('../models/db/LastIdModel');
 
 var lastIdService = {};
 
@@ -7,85 +8,48 @@ lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY = "problemset_problem";
 lastIdService.COURSE_PROBLEM_LAST_ID_KEY = "course_problem";
 
 var insertKeyLastId  = function (key, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: ");
-    } else {
-      var record = {
-        field: key,
-        value: 0
-      };
-
-      var query = "INSERT INTO last_id SET ?";
-
-      connection.query(query, record, function (err) {
-        connection.release();
-        if (err) {
-          callback("error inserting to last_id: " + err)
-        } else {
-          callback(null);
-        }
-      });
-    }
+  LastIdModel.create({
+    field: key,
+    value: 0
+  }).then(function () {
+    callback(null);
+  }, function (err) {
+    callback(err);
   });
 };
 
 lastIdService.getKeyLastId = function (key, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: " + err);
-    } else {
-      var query = "SELECT value"
-        + " FROM last_id"
-        + " WHERE field ='" + key + "'";
-
-      connection.query(query, function (err, rows) {
-        connection.release();
-        if (err) {
-          callback("error querrying db: " + err);
-        } else {
-          if (rows.length) {
-            callback(null, rows[0]["value"]);
-          } else {
-            insertKeyLastId(key, function (err) {
-              if (err) {
-                callback(err);
-              } else {
-                callback(null, 0);
-              }
-            });
-          }
-        }
-      });
+  LastIdModel.findOne({
+    where: {
+      field: key
     }
+  }).then(function (lastId) {
+    if (!lastId) {
+      insertKeyLastId(key, function (err) {
+        callback(null, 0);
+      });
+    } else {
+      callback(null, lastId.value);
+    }
+  }, function (err) {
+    callback(err);
   });
 };
 
 lastIdService.updateLastId = function (key, lastId, callback) {
   if (lastId) {
-    dbConnection.db.getConnection(function (err, connection) {
-      if (err) {
-        connection.release();
-        callback("error connecting to db: " + err);
-      } else {
-        var value = {
-          value: lastId
-        };
-        var query = "UPDATE last_id"
-          + " SET value=:value"
-          + " WHERE field = '" + key + "'";
-
-        connection.query(query, value, function (err) {
-          connection.release();
-          if (err) {
-            callback("error updating last_id: " + err);
-          } else {
-            callback(null);
-          }
-        });
+    LastIdModel.findOne({
+      where: {
+        field: key
       }
+    }).then(function (lastIdInstance) {
+      lastIdInstance.update({
+        value: lastId
+      }).then(function () {
+        callback(null);
+      }, function (err) {
+        callback(err);
+      });
     });
   } else {
     callback(null);

@@ -1,87 +1,59 @@
 var _ = require('underscore');
 
-var dbConnection = require('../dbConnection');
 var Grading = require('../models/Grading');
+var GradingModel = require('../models/db/GradingModel');
 
 var gradingService = {};
 
 gradingService.insertGradingData = function (gradings, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: " + err);
-    } else {
-      var values = _.map(gradings, function (grading) {
-        return [
-          grading.getSubmissionJid(),
-          grading.getScore(),
-          grading.getVerdictCode(),
-          grading.getVerdictName()
-        ]
-      });
-      var query = "INSERT INTO grading"
-                  + " (submission_jid, score, verdict_code, verdict_name)"
-                  + " VALUES ?";
+  var values = _.map(gradings, function (grading) {
+    return {
+      submissionJid: grading.getSubmissionJid(),
+      score: grading.getScore(),
+      verdictCode: grading.getVerdictCode(),
+      verdictName: grading.getVerdictName()
+    };
+  });
 
-      connection.query(query, values, function (err) {
-        connection.release();
-        if (err) {
-          callback("error inserting to grading: " + err);
-        } else {
-          callback(null, gradings.length);
-        }
-      });
-    }
+  GradingModel.bulkCreate(values).then(function () {
+    callback(null, gradings.length);
+  }, function (err) {
+    callback(err);
   });
 };
 
 gradingService.getGradingData = function (limit, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: " + err);
-    } else {
-      var query = "SELECT id, submission_jid, score, verdict_code, verdict_name"
-                  + " FROM grading"
-                  + " ORDER BY id ASC"
-                  + " LIMIT " + limit;
+  GradingModel.findAll({
+    limit: limit,
+    order: ['id', 'ASC']
+  }).then(function (gradings) {
+    var result = [];
+    gradings.forEach(function (grading) {
+      var record = new Grading();
+      record.setId(grading.id)
+            .setSubmissionJid(grading.submissionJid)
+            .setScore(grading.score)
+            .setVerdictCode(grading.verdictCode)
+            .setVerdictName(grading.verdictName);
 
-      connection.query(query, function (err, rows) {
-        connection.release();
-        if (err) {
-          console.log("error querying db: " + err);
-        } else {
-          var gradings = [];
-          for (var i = 0; i < rows.length; i++) {
-            var grading = new Grading();
-            grading.setId(rows[0]["id"])
-                  .setSubmissionJid(rows[0]["submission_jid"])
-                  .setScore(rows[0]["score"])
-                  .setVerdictCode(rows[0]["verdict_code"])
-                  .setVerdictName(rows[0]["verdict_name"]);
-          }
+      result.push(record);
+    });
 
-          callback(null, gradings);
-        }
-      });
-    }
+    callback(null, result);
+  }, function (err) {
+    callback(err);
   });
 };
 
 gradingService.deleteGrading = function (id, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      console.log("error connecting to db: " + err);
-    } else {
-      var query = "DELETE FROM grading"
-                  + " WHERE id=" + id;
-
-      connection.query(query, function (err) {
-        connection.release();
-        callback(err);
-      });
+  GradingModel.destroy({
+    where: {
+      id: id
     }
+  }).then(function () {
+    callback(null);
+  }, function (err) {
+    callback(err);
   });
 };
 

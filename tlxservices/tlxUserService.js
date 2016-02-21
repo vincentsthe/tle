@@ -3,7 +3,7 @@ var User = require('../models/User');
 
 var tlxUserService = {};
 
-tlxUserService.fetchUserFromJophiel = function (lastId, limit, callback) {
+tlxUserService.fetchUserFromJophielFromLastId = function (lastId, limit, callback) {
   dbConnection.jophiel.getConnection(function (err, connection) {
     if (err) {
       connection.release();

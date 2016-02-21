@@ -1,160 +1,127 @@
 var _ = require('underscore');
 
-var dbConnection = require('../dbConnection');
+var ProblemModel = require('../models/db/ProblemModel');
+var SubmissionModel = require('../models/db/SubmissionModel');
+var UserModel = require('../models/db/UserModel');
 
 var submissionService = {};
 
 submissionService.getLastJerahmeelId = function (callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("Error connecting to db: " + err);
+  SubmissionModel.max('jerahmeelSubmissionId').then(function (lastId) {
+    if (lastId) {
+      callback(null, lastId);
     } else {
-      var query = "SELECT MAX(jerahmeel_submission_id) max_id"
-                  + " FROM submission";
-
-      connection.query(query, function (err, rows) {
-        connection.release();
-        if (err) {
-          callback("error querying db: " + err);
-        } else {
-          var lastId;
-          if (rows.length) {
-            lastId = rows[0]["max_id"];
-          } else {
-            lastId = 0;
-          }
-
-          callback(null, lastId);
-        }
-      });
+      callback(null, 0);
     }
+  }, function (err) {
+    callback(err);
   });
 };
 
 submissionService.fillProblemSlug = function (submissions, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: " + err);
-    } else {
-      var problemJids = _.map(submissions, function (submission) {
-        return "'" + submission.getProblemJid() + "'";
-      });
-      var query = "SELECT problem_jid, slug"
-                  + " FROM problem"
-                  + " WHERE problem_jid IN (" + problemJids.join(",") + ")";
+  if (submissions.length) {
+    var problemJids = _.map(submissions, function (submission) {
+      return submission.getProblemJid();
+    });
 
-      connection.query(query, function (err, rows) {
-        connection.release();
-        if (err) {
-          callback("error querying db: " + err);
-        } else {
-          var problemMap = {};
-          for (var i = 0; i < rows.length; i++) {
-            problemMap[rows[i]["problem_jid"]] = rows[i]["slug"];
-          }
-
-          for (var i = 0; i < submissions.length; i++) {
-            submissions[i].setSlug(problemMap[submissions[i].getProblemJid()]);
-          }
-
-          callback(null, submissions);
+    ProblemModel.findAll({
+      where: {
+        problemJid: {
+          $in: problemJids
         }
+      }
+    }).then(function (problems) {
+      var problemMap = {};
+      problems.forEach(function (problem) {
+        problemMap[problem.problemJid] = problem.slug;
       });
-    }
-  });
+
+      submissions.forEach(function (submission) {
+        submission.setProblemSlug(problemMap[submission.getProblemJid()]);
+      });
+
+      callback(null, submissions);
+    }, function (err) {
+      callback(err);
+    });
+  } else {
+    callback(null, submissions);
+  }
 };
 
 submissionService.fillUsername = function (submissions, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: " + err);
-    } else {
-      var userJids = _.map(submissions, function (submission) {
-        return "'" + submission.getUserJid() + "'";
-      });
-      var query = "SELECT user_jid, username"
-                  + " FROM user"
-                  + " WHERE user_jid IN (" + userJids.join(",") + ")";
+  if (submissions.length) {
+    var userJids = _.map(submissions, function (submission) {
+      return submission.getUserJid();
+    });
 
-      connection.query(query, function (err, rows) {
-        connection.release();
-        if (err) {
-          callback("error querrying db: " + err);
-        } else {
-          var userMap = {};
-          for (var i = 0; i < rows.length; i++) {
-            userMap[rows[i]["user_jid"]] = rows[i]["username"];
-          }
-
-          for (var i = 0; i < submissions.length; i++) {
-            submissions[i].setUsername(userMap[submissions[i].getUserJid()]);
-          }
-
-          callback(null, submissions);
+    UserModel.findAll({
+      where: {
+        userJid: {
+          $in: userJids
         }
+      }
+    }).then(function (users) {
+      var userMap = {};
+      users.forEach(function (user) {
+        userMap[user.userJid] = user.username;
       });
-    }
-  });
+
+      submissions.forEach(function (submission) {
+        submission.setUsername(userMap[submission.getUserJid()]);
+      });
+
+      callback(null, submissions);
+    }, function (err) {
+      callback(err);
+    });
+  } else {
+    callback(null, submissions);
+  }
 };
 
 submissionService.insertSubmission = function (submissions, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: " + err);
-    } else {
-      var values = _.map(submissions, function (submission) {
-        return [
-          submission.getJerahmeelSubmissionId(),
-          submission.getSubmissionJid(),
-          submission.getUserJid(),
-          submission.getUsername(),
-          submission.getTimeStamp(),
-          submission.getLanguage(),
-          submission.getProblemJid(),
-          submission.getProblemSlug()
-        ];
-      });
+  var values = _.map(submissions, function (submission) {
+    return {
+      jerahmeelSubmissionId: submission.getJerahmeelSubmissionId(),
+      submissionJid: submission.getSubmissionJid(),
+      userJid: submission.getUserJid(),
+      username: submission.getUsername(),
+      submitTime: submission.getSubmitTime(),
+      language: submission.getLanguage(),
+      problemJid: submission.getProblemJid(),
+      problemSlug: submission.getProblemSlug()
+    };
+  });
 
-      var query = "INSERT INTO submission"
-                  + " (jerahmeel_submission_id, submission_jid, user_jid, username, `timestamp`, language, problem_jid, problem_slug)"
-                  + " VALUES ?";
-
-      connection.query(query, [values], function (err) {
-        connection.release();
-        if (err) {
-          callback("error inserting user to db: " + err);
-        } else {
-          callback(null, submissions.length);
-        }
-      });
-    }
+  SubmissionModel.bulkCreate(values).then(function () {
+    callback(null, submissions.length);
+  }, function (err) {
+    callback(err);
   });
 };
 
 submissionService.updateSubmissionGrading = function (grading, callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: " + err);
-    } else {
-      var query = "UPDATE submission"
-                  + " SET score=:score, verdict_code=:verdict_code, verdict_name=:verdict_name"
-                  + " WHERE submission_jid=:submission_jid";
-
-      connection.query(query, {
+  SubmissionModel.findOne({
+    where: {
+      submissionJid: grading.getSubmissionJid()
+    }
+  }).then(function (submission) {
+    if (submission) {
+      submission.update({
         score: grading.getScore(),
-        verdict_code: grading.getVerdictCode(),
-        verdict_name: grading.getVerdictName(),
-        submission_jid: grading.getSubmissionJid()
+        verdictCode: grading.getVerdictCode(),
+        verdictName: grading.getVerdictName()
+      }).then(function () {
+        callback(null);
       }, function (err) {
-        connection.release();
         callback(err);
       });
+    } else {
+      callback("submission not found");
     }
+  }, function (err) {
+    callback(err);
   });
 };
 

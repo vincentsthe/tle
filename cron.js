@@ -32,7 +32,7 @@ scheduler.importUser = new CronJob({
       }
     });
   },
-  start: true
+  start: false
 });
 
 scheduler.importSubmission = new CronJob({
@@ -60,7 +60,7 @@ scheduler.importGrading = new CronJob({
       }
     });
   },
-  start: false
+  start: true
 });
 
 module.exports = scheduler;

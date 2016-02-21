@@ -14,6 +14,7 @@ tlxProblemService.fetchProblemFromJerahmeelProblemset = function (lastId, limit,
       var query = "SELECT jerahmeel_problem_set_problem.id id, jerahmeel_problem_set_problem.problemJid problemJid, jerahmeel_problem_set.id problemset_id"
                   + " FROM jerahmeel_problem_set_problem"
                   + " JOIN jerahmeel_problem_set ON jerahmeel_problem_set_problem.problemSetJid = jerahmeel_problem_set.jid"
+                  + " WHERE jerahmeel_problem_set_problem.id > " + lastId
                   + " LIMIT " + limit;
 
       connection.query(query, function (err, rows) {
@@ -45,17 +46,18 @@ tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, cal
       connection.release();
       callback("error connecting to jerahmeel: " + err);
     } else {
-      var query = "SELECT session_problem.id id, session_problem.problemJid problem_jid, session_problem.id session_problem_id, session.id session_id, course.id course_id, curriculum.id curriculum_id"
-                  + " jerahmeel_session_problem session_problem"
+      var query = "SELECT session_problem.id id, session_problem.problemJid problem_jid, session_problem.id session_problem_id, session.id session_id, curriculum_course.id curriculum_course_id, curriculum.id curriculum_id"
+                  + " FROM jerahmeel_session_problem session_problem"
                   + " JOIN jerahmeel_session session ON session_problem.sessionJid = session.jid"
                   + " JOIN jerahmeel_course_session course_session ON session.jid = course_session.sessionJid"
                   + " JOIN jerahmeel_course course ON course.jid = course_session.courseJid"
                   + " JOIN jerahmeel_curriculum_course curriculum_course ON curriculum_course.courseJid = course.jid"
-                  + " JOIN jerahmeel_curriculum curriculum curriculum_course.curriculumJid = curriculum.jid"
+                  + " JOIN jerahmeel_curriculum  curriculum ON curriculum_course.curriculumJid = curriculum.jid"
                   + " WHERE session_problem.type = 'PROGRAMMING'"
-                  + " WHERE id > " + lastId
+                  + " AND session_problem.id > " + lastId
                   + " LIMIT " + limit;
 
+      console.log(query);
       connection.query(query, function (err, rows) {
         connection.release();
         if (err) {
@@ -67,7 +69,7 @@ tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, cal
             var problem = new Problem();
             maxId = Math.max(maxId, rows[i]["id"]);
             problem.setProblemJid(rows[i]["problem_jid"])
-                  .setUrl("/training/curriculum/" + rows[i]["curriculum_id"] + "/courses/" + rows[i]["course_id"] + "/sessions/" + rows[i]["session_id"] + "/problems/" + rows[i]["session_problem_id"]);
+                  .setUrl("/training/curriculums/" + rows[i]["curriculum_id"] + "/courses/" + rows[i]["curriculum_course_id"] + "/sessions/" + rows[i]["session_id"] + "/problems/" + rows[i]["session_problem_id"] + "/");
 
             problems.push(problem);
           }
@@ -85,32 +87,36 @@ tlxProblemService.fillProblemSlugFromSandalphon = function (problems, callback) 
       connection.release();
       callback("Error connecting to Sandalphon");
     } else {
-      var problemJids = _.map(problems, function (value) {
-        return "'" + value.getProblemJid() + "'";
-      });
+      if (problems.length) {
+        var problemJids = _.map(problems, function (value) {
+          return "'" + value.getProblemJid() + "'";
+        });
 
-      var query = "SELECT id, jid, slug FROM sandalphon_problem"
-                  + " WHERE jid IN (" + problemJids.join(",") + ")";
+        var query = "SELECT id, jid, slug FROM sandalphon_problem"
+          + " WHERE jid IN (" + problemJids.join(",") + ")";
 
-      connection.query(query, function (err, rows) {
-        connection.release();
-        if (err) {
-          callback("error query sandalphon: " + query)
-        } else {
-          var problemSlugs = {};
-          var maxId = 0;
-          for (var i = 0; i < rows.length; i++) {
-            problemSlugs[rows[i]["jid"]] = rows[i]["slug"];
-            maxId = Math.max(maxId, rows[i]["id"]);
+        connection.query(query, function (err, rows) {
+          connection.release();
+          if (err) {
+            callback("error query sandalphon: " + query)
+          } else {
+            var problemSlugs = {};
+            var maxId = 0;
+            for (var i = 0; i < rows.length; i++) {
+              problemSlugs[rows[i]["jid"]] = rows[i]["slug"];
+              maxId = Math.max(maxId, rows[i]["id"]);
+            }
+
+            for (var i = 0; i < problems.length; i++) {
+              problems[i].setSlug(problemSlugs[problems[i].getProblemJid()]);
+            }
+
+            callback(null, problems, maxId);
           }
-
-          for (var i = 0; i < problems.length; i++) {
-            problems[i].setSlug(problemSlugs[problems[i].getProblemJid()]);
-          }
-
-          callback(null, rows, maxId);
-        }
-      });
+        });
+      } else {
+        callback(null, problems, 0);
+      }
     }
   });
 };

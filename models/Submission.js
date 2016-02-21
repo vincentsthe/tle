@@ -7,7 +7,7 @@ var Submission = function () {
   this.score = null;
   this.userJid = "";
   this.username = "";
-  this.timestamp = null;
+  this.submitTime = null;
   this.language = "";
   this.problemJid = "";
   this.problemSlug = "";
@@ -20,6 +20,11 @@ Submission.prototype.setId = function (id) {
 
 Submission.prototype.setJerahmeelSubmissionId = function (jerahmeelSubmissionId) {
   this.jerahmeelSubmissionId = jerahmeelSubmissionId;
+  return this;
+};
+
+Submission.prototype.setSubmissionJid = function (submissionJid) {
+  this.submissionJid = submissionJid;
   return this;
 };
 
@@ -48,8 +53,8 @@ Submission.prototype.setUsername = function (username) {
   return this;
 };
 
-Submission.prototype.setTimestamp = function (timestamp) {
-  this.timestamp = timestamp;
+Submission.prototype.setSubmitTime = function (submitTime) {
+  this.submitTime = submitTime;
   return this;
 };
 
@@ -76,6 +81,10 @@ Submission.prototype.getJerahmeelSubmissionId = function () {
   return this.jerahmeelSubmissionId;
 };
 
+Submission.prototype.getSubmissionJid = function () {
+  return this.submissionJid;
+};
+
 Submission.prototype.getVerdictCode = function () {
   return this.verdictCode;
 };
@@ -96,8 +105,8 @@ Submission.prototype.getUsername = function () {
   return this.username;
 };
 
-Submission.prototype.getTimeStamp = function () {
-  return this.timestamp;
+Submission.prototype.getSubmitTime = function () {
+  return this.submitTime;
 };
 
 Submission.prototype.getLanguage = function () {

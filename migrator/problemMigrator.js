@@ -32,12 +32,13 @@ problemMigrator.migrate = function (limit, callback) {
           callback(null, problems, problemsetMaxId, courseLastId);
         }
       });
-    }, function (problems, problemsetMaxId, courseLastId) {
+    }, function (problems, problemsetMaxId, courseLastId, callback) {
       tlxProblemService.fetchProblemFromJerahmeelCourse(courseLastId, limit - problems.length, function (err, courseProblems, courseMaxId) {
         if (err) {
-          console.log("error fetching problem from course");
+          console.log("error fetching problem from course: " + err);
           callback(null, problems, problemsetMaxId, 0);
         } else {
+          problems = problems.concat(courseProblems);
           callback(null, problems, problemsetMaxId, courseMaxId);
         }
       });
@@ -50,7 +51,7 @@ problemMigrator.migrate = function (limit, callback) {
         }
       });
     }, function (problems, problemsetMaxId, courseMaxId, callback) {
-      if (maxId) {
+      if (problems.length) {
         problemService.insertProblem(problems, function (err) {
           if (err) {
             callback("error inserting to db: " + err);
@@ -59,20 +60,20 @@ problemMigrator.migrate = function (limit, callback) {
           }
         });
       } else {
-        callback(null, 0, 0);
+        callback(null, 0, 0, 0);
       }
     }, function (problemCount, problemsetMaxId, courseMaxId, callback) {
       lastIdService.updateLastId(lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY, problemsetMaxId, function (err) {
         if (err) {
-          callback("error updateing last id for " + lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY + ": " + err);
+          callback("error updating last id for " + lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY + ": " + err);
         } else {
-          callback(null, problemCount);
+          callback(null, problemCount, courseMaxId);
         }
       });
     }, function (problemCount, courseMaxId, callback) {
       lastIdService.updateLastId(lastIdService.COURSE_PROBLEM_LAST_ID_KEY, courseMaxId, function (err) {
         if (err) {
-          callback("error updateing last id for " + lastIdService.COURSE_PROBLEM_LAST_ID_KEY + ": " + err);
+          callback("error updating last id for " + lastIdService.COURSE_PROBLEM_LAST_ID_KEY + ": " + err);
         } else {
           callback(null, problemCount);
         }

@@ -23,10 +23,11 @@ tlxSubmissionService.fetchSubmissionFromJerahmeel = function (lastId, limit, cal
           for (var i = 0; i < rows.length; i++) {
             var submission = new Submission();
             submission.setJerahmeelSubmissionId(rows[i]["id"])
+                      .setSubmissionJid(rows[i]["jid"])
                       .setProblemJid(rows[i]["problemJid"])
                       .setUserJid(rows[i]["userJid"])
                       .setLanguage(rows[i]["language"])
-                      .setTime(rows[i]["timestamp"]);
+                      .setSubmitTime(Math.round(rows[i]["timestamp"] / 1000));
 
             submissions.push(submission);
           }

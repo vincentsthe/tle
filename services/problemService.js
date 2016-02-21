@@ -1,40 +1,26 @@
-var dbConnection = require('../dbConnection');
+var _ = require('underscore');
+
+var ProblemModel = require('../models/db/ProblemModel');
 
 var problemService = {};
 
 problemService.insertProblem = function (problems, callback) {
   if (problems.length) {
     var values = _.map(problems, function (problem) {
-      return [
-        problem.getProblemJid(),
-        problem.getSlug(),
-        problem.getAcceptedUser(),
-        problem.getTotalSubmission(),
-        problem.getAcceptedSubmission(),
-        problem.getUrl()
-      ];
+      return {
+        problemJid: problem.getProblemJid(),
+        slug: problem.getSlug(),
+        acceptedUser: problem.getAcceptedUser(),
+        totalSubmission: problem.getTotalSubmission(),
+        acceptedSubmission: problem.getAcceptedSubmission(),
+        url: problem.getUrl()
+      };
     });
 
-    dbConnection.db.getConnection(function (err, connection) {
-      if (err) {
-        connection.release();
-        callback("error connecting to db");
-      } else {
-        var query = "INSERT INTO problem"
-          + " (problem_jid, slug, accepted_user, total_submission, accepted_submission, url)"
-          + " VALUES ?";
-
-        connection.query(query, [values], function (err) {
-          connection.release();
-          if (err) {
-            console.log(values);
-            console.log(query);
-            callback("error inserting to problem: " + err);
-          } else {
-            callback(null, problems.length);
-          }
-        });
-      }
+    ProblemModel.bulkCreate(values).then(function () {
+      callback(null, problems.length)
+    }, function (err) {
+      callback(err);
     });
   } else {
     callback(null);
