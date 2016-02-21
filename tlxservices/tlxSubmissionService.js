@@ -1,42 +1,32 @@
-var dbConnection = require('../dbConnection');
+var knexConnection = require('../knexConnection');
 var Submission = require('../models/Submission');
 
 var tlxSubmissionService = {};
 
 tlxSubmissionService.fetchSubmissionFromJerahmeel = function (lastId, limit, callback) {
-  dbConnection.jerahmeel.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to jerahmeel: " + err);
-    } else {
-      var query = "SELECT id, jid, problemJid, userCreate userJid, gradingLanguage language, timeCreate `timestamp`"
-                  + " FROM jerahmeel_programming_submission"
-                  + " WHERE id > " + lastId
-                  + " LIMIT " + limit;
+  knexConnection.jerahmeel
+    .select("id", "jid", "problemJid", "userCreate AS userJid", "gradingLanguage AS language", "timeCreate")
+    .from("jerahmeel_programming_submission")
+    .where('id', '>', lastId)
+    .limit(limit)
+    .then(function (submissionRecords) {
+      var submissions = [];
+      submissionRecords.forEach(function (submissionRecord) {
+        var submission = new Submission();
+        submission.setJerahmeelSubmissionId(submissionRecord.id)
+          .setSubmissionJid(submissionRecord.jid)
+          .setProblemJid(submissionRecord.problemJid)
+          .setUserJid(submissionRecord.userJid)
+          .setLanguage(submissionRecord.language)
+          .setSubmitTime(submissionRecord.timeCreate / 1000);
 
-      connection.query(query, function (err, rows) {
-        connection.release();
-        if (err) {
-          callback("error querying jerahmeel: " + err);
-        } else {
-          var submissions = [];
-          for (var i = 0; i < rows.length; i++) {
-            var submission = new Submission();
-            submission.setJerahmeelSubmissionId(rows[i]["id"])
-                      .setSubmissionJid(rows[i]["jid"])
-                      .setProblemJid(rows[i]["problemJid"])
-                      .setUserJid(rows[i]["userJid"])
-                      .setLanguage(rows[i]["language"])
-                      .setSubmitTime(Math.round(rows[i]["timestamp"] / 1000));
-
-            submissions.push(submission);
-          }
-
-          callback(null, submissions);
-        }
+        submissions.push(submission);
       });
-    }
-  });
+
+      callback(null, submissions);
+    }, function (err) {
+      callback(err);
+    });
 };
 
 module.exports = tlxSubmissionService;

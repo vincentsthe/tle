@@ -60,7 +60,7 @@ scheduler.importGrading = new CronJob({
       }
     });
   },
-  start: true
+  start: false
 });
 
 module.exports = scheduler;

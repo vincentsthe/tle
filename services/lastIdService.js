@@ -1,4 +1,3 @@
-var dbConnection = require('../dbConnection');
 var LastIdModel = require('../models/db/LastIdModel');
 
 var lastIdService = {};

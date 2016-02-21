@@ -1,68 +1,39 @@
 var _ = require('underscore');
 
-var dbConnection = require('../dbConnection');
+var UserModel = require('../models/db/UserModel');
 
 var userService = {};
 
 userService.getLastJophielUserId = function (callback) {
-  dbConnection.db.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback("error connecting to db: " + err);
+  UserModel.max('jophielUserId').then(function (lastId) {
+    if (lastId) {
+      callback(null, lastId);
     } else {
-      var query = "SELECT MAX(jophiel_user_id) max_id"
-                  + " FROM user";
-
-      connection.query(query, function (err, rows) {
-        connection.release();
-        if (err) {
-          callback("error querying db: " + err);
-        } else {
-          var lastId;
-          if (rows.length && rows[0]["max_id"]) {
-            lastId = rows[0]["max_id"];
-          } else {
-            lastId = 0;
-          }
-          callback(null, lastId);
-        }
-      });
+      callback(null, 0);
     }
+  }, function (err) {
+    callback(err);
   });
 };
 
 userService.insertUser = function (users, callback) {
   if (users.length) {
     var values = _.map(users, function (user) {
-      return [
-        user.getJophielUserId(),
-        user.getUserJid(),
-        user.getUsername(),
-        user.getName(),
-        user.getAcceptedSubmission(),
-        user.getTotalSubmission(),
-        user.getAcceptedProblem()
-      ];
+      return {
+        jophielUserId: user.getJophielUserId(),
+        userJid: user.getUserJid(),
+        username: user.getUsername(),
+        name: user.getName(),
+        acceptedSubmission: user.getAcceptedSubmission(),
+        totalSubmission: user.getTotalSubmission(),
+        acceptedProblem: user.getAcceptedProblem()
+      };
     });
 
-    dbConnection.db.getConnection(function (err, connection) {
-      if (err) {
-        connection.release();
-        callback("error connecting to db: " + err)
-      } else {
-        var query = "INSERT INTO user"
-                    + " (jophiel_user_id, user_jid, username, name, accepted_submission, total_submission, accepted_problem)"
-                    + " VALUES ?";
-
-        connection.query(query, [values], function (err) {
-          connection.release();
-          if (err) {
-            callback("error inserting user: " + err);
-          } else {
-            callback(null, users.length);
-          }
-        });
-      }
+    UserModel.bulkCreate(values).then(function () {
+      callback(null, users.length);
+    }, function (err) {
+      callback(err);
     });
   } else {
     callback(null);
