@@ -5,6 +5,8 @@ var userMigrator = require('./migrator/userMigrator');
 var submissionMigrator = require('./migrator/submissionMigrator');
 var gradingMigrator = require('./migrator/gradingMigrator');
 
+var userNameUpdater = require('./task/userNameUpdater');
+
 var scheduler = {};
 
 scheduler.importProblem = new CronJob({
@@ -57,6 +59,20 @@ scheduler.importGrading = new CronJob({
         console.log("error migrating grading: " + err);
       } else {
         console.log("success migrating " + gradingCount + " grading");
+      }
+    });
+  },
+  start: false
+});
+
+scheduler.updateUserName = new CronJob({
+  cronTime: '0 0 0 * * *',
+  onTick: function () {
+    userNameUpdater.updateUserName(function (err) {
+      if (err) {
+        console.log("error updating user name: " + err);
+      } else {
+        console.log("done updating user name");
       }
     });
   },

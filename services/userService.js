@@ -40,4 +40,26 @@ userService.insertUser = function (users, callback) {
   }
 };
 
+userService.changeName = function (userJid, name, callback) {
+  UserModel.findOne({
+    where: {
+      userJid: userJid
+    }
+  }).then(function (user) {
+    if (user.name != name) {
+      user.update({
+        name: name
+      }).then(function () {
+        callback(null);
+      }, function (err) {
+        callback(err);
+      });
+    } else {
+      callback(null);
+    }
+  }, function (err) {
+    callback(err);
+  });
+};
+
 module.exports = userService;

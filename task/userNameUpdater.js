@@ -1,7 +1,7 @@
 var async = require("async");
 
-var dbConnection = require('../dbConnection');
 var tlxUserService = require('../tlxservices/tlxUserService');
+var userService = require('../services/userService');
 
 var QUERY_PER_BATCH = 100;
 
@@ -15,9 +15,19 @@ userNameUpdater.updateUserName = function (callback) {
     function () {
       return lastUpdateCount == QUERY_PER_BATCH;
     }, function (callback) {
-      tlxUserService.fetchUserFromJophielFromLastId(offset, QUERY_PER_BATCH, function (err, users) {
-
+      tlxUserService.fetchUser(offset, QUERY_PER_BATCH, function (err, users) {
+        async.each(users, function (user, callback) {
+          userService.changeName(user.getUserJid(), user.getName(), function (err) {
+            callback(err);
+          });
+        }, function (err) {
+          lastUpdateCount = users.length;
+          offset += users.length;
+          callback(err);
+        });
       });
+    }, function (err) {
+      callback(err);
     }
   );
 };
