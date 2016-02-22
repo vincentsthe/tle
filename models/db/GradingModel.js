@@ -21,6 +21,9 @@ var GradingModel = sequelizeConnection.define('grading', {
   verdictName: {
     type: sequelize.STRING,
     field: 'verdict_name'
+  },
+  evaluated: {
+    type: sequelize.BOOLEAN
   }
 });
 

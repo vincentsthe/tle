@@ -19,7 +19,8 @@ tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback)
         grading.setSubmissionJid(gradingRecord.submissionJid)
           .setScore(gradingRecord.score)
           .setVerdictCode(gradingRecord.verdictCode)
-          .setVerdictName(gradingRecord.verdictName);
+          .setVerdictName(gradingRecord.verdictName)
+          .setEvaluated(false);
 
         gradings.push(grading);
       });

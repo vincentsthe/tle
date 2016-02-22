@@ -1,6 +1,6 @@
 var async = require('async');
 
-var gradingService = require('../services/gradingServices');
+var gradingService = require('../services/gradingService');
 var submissionService = require('../services/submissionService');
 
 var submissionGrader = {};
@@ -8,7 +8,7 @@ var submissionGrader = {};
 submissionGrader.consumeGradingData = function (limit, callback) {
   async.waterfall([
     function (callback) {
-      gradingService.getGradingData(limit, function (err, gradings) {
+      gradingService.getUnevaluatedGradingData(limit, function (err, gradings) {
         if (err) {
           console.log("error fetching grading data from db: " + err);
         } else {
@@ -19,15 +19,16 @@ submissionGrader.consumeGradingData = function (limit, callback) {
       async.each(gradings, function (grading, callback) {
         submissionService.updateSubmissionGrading(grading, function (err) {
           if (err) {
+            console.log(err);
             callback(null);
           } else {
-            gradingService.deleteGrading(grading.getId(), function (err) {
+            gradingService.markGradingAsEvaluated(grading.getId(), function (err) {
               callback(null);
             });
           }
         });
       }, function (err) {
-        callback(err);
+        callback(err, gradings.length);
       });
     }
   ], function (err, gradingConsumed) {

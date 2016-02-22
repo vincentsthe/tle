@@ -5,6 +5,7 @@ var userMigrator = require('./migrator/userMigrator');
 var submissionMigrator = require('./migrator/submissionMigrator');
 var gradingMigrator = require('./migrator/gradingMigrator');
 
+var submissionGrader = require('./task/submissionGrader');
 var userNameUpdater = require('./task/userNameUpdater');
 
 var scheduler = {};
@@ -76,7 +77,21 @@ scheduler.updateUserName = new CronJob({
       }
     });
   },
-  start: false
+  start: true
+});
+
+scheduler.gradeSubmission = new CronJob({
+  cronTime: '* * * * * *',
+  onTick: function () {
+    submissionGrader.consumeGradingData(100, function (err, gradingConsumed) {
+      if (err) {
+        console.log("error consuming grading data");
+      } else {
+        console.log("done consuming " + gradingConsumed + " grading data");
+      }
+    });
+  },
+  start: true
 });
 
 module.exports = scheduler;

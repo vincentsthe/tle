@@ -11,7 +11,8 @@ gradingService.insertGradingData = function (gradings, callback) {
       submissionJid: grading.getSubmissionJid(),
       score: grading.getScore(),
       verdictCode: grading.getVerdictCode(),
-      verdictName: grading.getVerdictName()
+      verdictName: grading.getVerdictName(),
+      evaluated: grading.isEvaluated()
     };
   });
 
@@ -22,10 +23,13 @@ gradingService.insertGradingData = function (gradings, callback) {
   });
 };
 
-gradingService.getGradingData = function (limit, callback) {
+gradingService.getUnevaluatedGradingData = function (limit, callback) {
   GradingModel.findAll({
+    where: {
+      evaluated: false
+    },
     limit: limit,
-    order: ['id', 'ASC']
+    order: 'id ASC'
   }).then(function (gradings) {
     var result = [];
     gradings.forEach(function (grading) {
@@ -34,7 +38,8 @@ gradingService.getGradingData = function (limit, callback) {
             .setSubmissionJid(grading.submissionJid)
             .setScore(grading.score)
             .setVerdictCode(grading.verdictCode)
-            .setVerdictName(grading.verdictName);
+            .setVerdictName(grading.verdictName)
+            .setEvaluated(grading.evaluated);
 
       result.push(record);
     });
@@ -45,13 +50,19 @@ gradingService.getGradingData = function (limit, callback) {
   });
 };
 
-gradingService.deleteGrading = function (id, callback) {
-  GradingModel.destroy({
+gradingService.markGradingAsEvaluated = function (id, callback) {
+  GradingModel.findOne({
     where: {
       id: id
     }
-  }).then(function () {
-    callback(null);
+  }).then(function (grading) {
+    grading.update({
+      evaluated: true
+    }).then(function () {
+      callback(null);
+    }, function (err) {
+      callback(err);
+    });
   }, function (err) {
     callback(err);
   });
