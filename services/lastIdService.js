@@ -5,6 +5,7 @@ var lastIdService = {};
 lastIdService.GRADING_LAST_ID_KEY = "grading";
 lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY = "problemset_problem";
 lastIdService.COURSE_PROBLEM_LAST_ID_KEY = "course_problem";
+lastIdService.SUBMISSION_EVALUATED_LAST_ID = "evaluated_submission";
 
 var insertKeyLastId  = function (key, callback) {
   LastIdModel.create({

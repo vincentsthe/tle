@@ -27,4 +27,22 @@ problemService.insertProblem = function (problems, callback) {
   }
 };
 
+problemService.incrementSubmissionCount = function (problemJid, count, callback) {
+  ProblemModel.findOne({
+    where: {
+      problemJid: problemJid
+    }
+  }).then(function (problem) {
+    problem.update({
+      totalSubmission: problem.totalSubmission + count
+    }).then(function () {
+      callback(null);
+    }, function (err) {
+      callback(err);
+    });
+  }, function (err) {
+    callback(err);
+  });
+};
+
 module.exports = problemService;

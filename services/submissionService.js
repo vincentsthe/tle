@@ -1,6 +1,7 @@
 var _ = require('underscore');
 
 var ProblemModel = require('../models/db/ProblemModel');
+var Submission = require('../models/Submission');
 var SubmissionModel = require('../models/db/SubmissionModel');
 var UserModel = require('../models/db/UserModel');
 
@@ -13,6 +14,40 @@ submissionService.getLastJerahmeelId = function (callback) {
     } else {
       callback(null, 0);
     }
+  }, function (err) {
+    callback(err);
+  });
+};
+
+submissionService.getSubmissionByLastId = function (lastId, limit, callback) {
+  SubmissionModel.findAll({
+    where: {
+      id: {
+        $gt: lastId
+      }
+    },
+    limit: limit
+  }).then(function (submissionRecords) {
+    var submissions = [];
+    submissionRecords.forEach(function (submissionRecord) {
+      var submission = new Submission();
+      submission.setId(submissionRecord.id)
+        .setJerahmeelSubmissionId(submissionRecord.jerahmeelSubmissionId)
+        .setSubmissionJid(submissionRecord.submissionJid)
+        .setVerdictCode(submissionRecord.verdictCode)
+        .setVerdictName(submissionRecord.verdictName)
+        .setScore(submissionRecord.score)
+        .setUserJid(submissionRecord.userJid)
+        .setUsername(submissionRecord.username)
+        .setLanguage(submissionRecord.language)
+        .setSubmitTime(submissionRecord.submitTime)
+        .setProblemJid(submissionRecord.problemJid)
+        .setProblemSlug(submissionRecord.problemSlug);
+
+      submissions.push(submission);
+    });
+
+    callback(null, submissions);
   }, function (err) {
     callback(err);
   });

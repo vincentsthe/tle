@@ -16,10 +16,12 @@ submissionMigrator.migrate = function (limit, callback) {
         callback(err, records);
       });
     }, function (records, callback) {
+      //TODO: it should get the info from TLX db not TLE db
       submissionService.fillProblemSlug(records, function (err, records) {
         callback(err, records);
       });
     }, function (records, callback) {
+      //TODO: it should get the info from TLX db not TLE db
       submissionService.fillUsername(records, function (err, records) {
         callback(err, records);
       });
