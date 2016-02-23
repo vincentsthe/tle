@@ -52,4 +52,21 @@ tlxUserService.fetchUserFromJophielFromLastId = function (lastId, limit, callbac
     });
 };
 
+tlxUserService.getUserUsernameByJids = function (userJids, callback) {
+  knexConnection.jophiel
+    .select("id", "jid", "username")
+    .from("jophiel_user")
+    .whereIn("jid", userJids)
+    .then(function (users) {
+      var usernameMap = {};
+      users.forEach(function (user) {
+        usernameMap[user.jid] = user.username;
+      });
+
+      callback(null, usernameMap);
+    }, function (err) {
+      callback(err);
+    });
+};
+
 module.exports = tlxUserService;

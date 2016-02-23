@@ -50,7 +50,7 @@ scheduler.importSubmission = new CronJob({
       }
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.importGrading = new CronJob({
@@ -64,7 +64,7 @@ scheduler.importGrading = new CronJob({
       }
     });
   },
-  start: true
+  start: false
 });
 
 scheduler.updateUserName = new CronJob({

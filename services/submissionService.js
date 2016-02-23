@@ -1,9 +1,7 @@
 var _ = require('underscore');
 
-var ProblemModel = require('../models/db/ProblemModel');
 var Submission = require('../models/Submission');
 var SubmissionModel = require('../models/db/SubmissionModel');
-var UserModel = require('../models/db/UserModel');
 
 var submissionService = {};
 
@@ -51,68 +49,6 @@ submissionService.getSubmissionByLastId = function (lastId, limit, callback) {
   }, function (err) {
     callback(err);
   });
-};
-
-submissionService.fillProblemSlug = function (submissions, callback) {
-  if (submissions.length) {
-    var problemJids = _.map(submissions, function (submission) {
-      return submission.getProblemJid();
-    });
-
-    ProblemModel.findAll({
-      where: {
-        problemJid: {
-          $in: problemJids
-        }
-      }
-    }).then(function (problems) {
-      var problemMap = {};
-      problems.forEach(function (problem) {
-        problemMap[problem.problemJid] = problem.slug;
-      });
-
-      submissions.forEach(function (submission) {
-        submission.setProblemSlug(problemMap[submission.getProblemJid()]);
-      });
-
-      callback(null, submissions);
-    }, function (err) {
-      callback(err);
-    });
-  } else {
-    callback(null, submissions);
-  }
-};
-
-submissionService.fillUsername = function (submissions, callback) {
-  if (submissions.length) {
-    var userJids = _.map(submissions, function (submission) {
-      return submission.getUserJid();
-    });
-
-    UserModel.findAll({
-      where: {
-        userJid: {
-          $in: userJids
-        }
-      }
-    }).then(function (users) {
-      var userMap = {};
-      users.forEach(function (user) {
-        userMap[user.userJid] = user.username;
-      });
-
-      submissions.forEach(function (submission) {
-        submission.setUsername(userMap[submission.getUserJid()]);
-      });
-
-      callback(null, submissions);
-    }, function (err) {
-      callback(err);
-    });
-  } else {
-    callback(null, submissions);
-  }
 };
 
 submissionService.insertSubmission = function (submissions, callback) {

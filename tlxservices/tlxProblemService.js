@@ -85,4 +85,21 @@ tlxProblemService.fillProblemSlugFromSandalphon = function (problems, callback) 
     });
 };
 
+tlxProblemService.getProblemSlugsByJids = function (problemJids, callback) {
+  knexConnection.sandalphon
+    .select("id", "jid", "slug")
+    .from("sandalphon_problem")
+    .whereIn("jid", problemJids)
+    .then(function (problems) {
+      var problemSlugsMap = {};
+      problems.forEach(function (problem) {
+        problemSlugsMap[problem.jid] = problem.slug;
+      });
+
+      callback(null, problemSlugsMap);
+    }, function (err) {
+      callback(err);
+    });
+};
+
 module.exports = tlxProblemService;
