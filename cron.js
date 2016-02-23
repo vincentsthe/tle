@@ -50,7 +50,7 @@ scheduler.importSubmission = new CronJob({
       }
     });
   },
-  start: true
+  start: false
 });
 
 scheduler.importGrading = new CronJob({
@@ -92,7 +92,7 @@ scheduler.gradeSubmission = new CronJob({
       }
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.evaluateSubmissionCount = new CronJob({
@@ -106,7 +106,7 @@ scheduler.evaluateSubmissionCount = new CronJob({
       }
     });
   },
-  start: false
+  start: true
 });
 
 module.exports = scheduler;

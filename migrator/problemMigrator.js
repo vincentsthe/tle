@@ -24,6 +24,7 @@ problemMigrator.migrate = function (limit, callback) {
       tlxProblemService.fetchProblemFromJerahmeelCourse(courseLastId, limit - problems.length, function (err, courseProblems, courseMaxId) {
         if (err) {
           console.log("error fetching problem from course: " + err);
+          callback(null, problems, problemsetMaxId, courseMaxId);
         } else {
           problems = problems.concat(courseProblems);
           callback(null, problems, problemsetMaxId, courseMaxId);
