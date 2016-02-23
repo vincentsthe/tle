@@ -62,29 +62,6 @@ tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, cal
     });
 };
 
-tlxProblemService.fillProblemSlugFromSandalphon = function (problems, callback) {
-  knexConnection.sandalphon
-    .select("id", "jid", "slug")
-    .from('sandalphon_problem')
-    .whereIn('jid', _.map(problems, function (problem) {
-      return problem.getProblemJid();
-    }))
-    .then(function (problemRecords) {
-      var problemSlugs = {};
-      problemRecords.forEach(function (problemRecord) {
-        problemSlugs[problemRecord.jid] = problemRecord.slug;
-      });
-
-      problems.forEach(function (problem) {
-        problem.setSlug(problemSlugs[problem.getProblemJid()]);
-      });
-
-      callback(null, problems)
-    }, function (err) {
-      callback(err);
-    });
-};
-
 tlxProblemService.getProblemSlugsByJids = function (problemJids, callback) {
   knexConnection.sandalphon
     .select("id", "jid", "slug")

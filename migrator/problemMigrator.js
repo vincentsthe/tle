@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var async = require('async');
 
 var lastIdService = require('../services/lastIdService');
@@ -31,8 +32,45 @@ problemMigrator.migrate = function (limit, callback) {
         }
       });
     }, function (problems, problemsetMaxId, courseMaxId, callback) {
-      tlxProblemService.fillProblemSlugFromSandalphon(problems, function (err, problemRecords) {
-        callback(err, problemRecords, problemsetMaxId, courseMaxId);
+      var problemJids = _.map(problems, function (problem) {
+        return problem.getProblemJid();
+      });
+
+      tlxProblemService.getProblemSlugsByJids(problemJids, function (err, problemSlugsMap) {
+        if (err) {
+          callback(err);
+        } else {
+          problems.forEach(function (problem) {
+            problem.setSlug(problemSlugsMap[problem.getProblemJid()]);
+          });
+
+          callback(null, problems, problemsetMaxId, courseMaxId);
+        }
+      });
+    }, function (problems, problemsetMaxId, courseMaxId, callback) {
+      var nonExistProblems = [];
+      async.each(problems, function (problem, callback) {
+        problemService.existByJid(problem.getProblemJid(), function (err, exist) {
+          if (err) {
+            callback(err);
+          } else {
+            if (!exist) {
+              for (var i = 0; i < nonExistProblems.length; i++) {
+                if (nonExistProblems[i].getProblemJid() == problem.getProblemJid()) {
+                  exist = true;
+                }
+              }
+
+              if (!exist) {
+                nonExistProblems.push(problem);
+              }
+            }
+
+            callback(null);
+          }
+        });
+      }, function (err) {
+        callback(err, nonExistProblems, problemsetMaxId, courseMaxId);
       });
     }, function (problems, problemsetMaxId, courseMaxId, callback) {
       if (problems.length) {

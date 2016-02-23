@@ -27,6 +27,22 @@ problemService.insertProblem = function (problems, callback) {
   }
 };
 
+problemService.existByJid = function (problemJid, callback) {
+  ProblemModel.findOne({
+    where: {
+      problemJid: problemJid
+    }
+  }).then(function (problem) {
+    if (problem) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  }, function (err) {
+    callback(err);
+  });
+};
+
 problemService.incrementSubmissionCount = function (problemJid, count, callback) {
   ProblemModel.findOne({
     where: {
