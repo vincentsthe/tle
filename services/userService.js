@@ -68,13 +68,39 @@ userService.incrementSubmissionCount = function (userJid, count, callback) {
       userJid: userJid
     }
   }).then(function (user) {
-    user.update({
-      totalSubmission: user.totalSubmission + count
-    }).then(function () {
+    if (user) {
+      user.update({
+        totalSubmission: user.totalSubmission + count
+      }).then(function () {
+        callback(null);
+      }, function (err) {
+        callback(err);
+      });
+    } else {
       callback(null);
-    }, function (err) {
-      callback(err);
-    });
+    }
+  }, function (err) {
+    callback(err);
+  });
+};
+
+userService.incrementAcceptedSubmissionCount = function (userJid, count, callback) {
+  UserModel.findOne({
+    where: {
+      userJid: userJid
+    }
+  }).then(function (user) {
+    if (user) {
+      user.update({
+        acceptedSubmission: user.acceptedSubmission + count
+      }).then(function () {
+        callback(null);
+      }, function (err) {
+        callback(err);
+      });
+    } else {
+      callback(null);
+    }
   }, function (err) {
     callback(err);
   });

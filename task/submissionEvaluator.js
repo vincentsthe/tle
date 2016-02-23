@@ -8,15 +8,6 @@ var userService = require('../services/userService');
 
 var submissionEvaluator = {};
 
-var getMaxId = function (submissions) {
-  var maxId = 0;
-  submissions.forEach(function (submission) {
-    maxId = Math.max(submission.getId());
-  });
-
-  return maxId;
-};
-
 var getUserSubmissionCountMap = function (submissions) {
   var submissionCountMap = {};
   submissions.forEach(function (submission) {
@@ -43,7 +34,6 @@ var getProblemSubmissionCountMap = function (submissions) {
   return problemCountMap;
 };
 
-// TODO: it should use transaction
 submissionEvaluator.evaluateSubmission = function (limit, callback) {
   async.waterfall([
     function (callback) {
@@ -81,7 +71,10 @@ submissionEvaluator.evaluateSubmission = function (limit, callback) {
         callback(err, submissions);
       });
     }, function (submissions, callback) {
-      var maxId = getMaxId(submissions);
+      var maxId = _.max(submissions, function (submission) {
+        return submission.getId();
+      }).getId();
+
       lastIdService.updateLastId(lastIdService.SUBMISSION_EVALUATED_LAST_ID, maxId, function (err) {
         callback(err, submissions.length);
       });

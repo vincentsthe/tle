@@ -5,6 +5,7 @@ var userMigrator = require('./migrator/userMigrator');
 var submissionMigrator = require('./migrator/submissionMigrator');
 var gradingMigrator = require('./migrator/gradingMigrator');
 
+var acceptedSubmissionEvaluator = require('./task/acceptedSubmissionEvaluator');
 var submissionEvaluator = require('./task/submissionEvaluator');
 var submissionGrader = require('./task/submissionGrader');
 var userNameUpdater = require('./task/userNameUpdater');
@@ -92,7 +93,7 @@ scheduler.gradeSubmission = new CronJob({
       }
     });
   },
-  start: true
+  start: false
 });
 
 scheduler.evaluateSubmissionCount = new CronJob({
@@ -103,6 +104,20 @@ scheduler.evaluateSubmissionCount = new CronJob({
         console.log("error evaluating submission");
       } else {
         console.log("done evaluating " + submissionEvaluated + " submission for submission count");
+      }
+    });
+  },
+  start: false
+});
+
+scheduler.evaluateAcceptedSubmissionCount = new CronJob({
+  cronTime: '* * * * * *',
+  onTick: function () {
+    acceptedSubmissionEvaluator.evaluateAcceptedSubmission(100, function (err, submissionEvaluated) {
+      if (err) {
+        console.log("error evaluating submission");
+      } else {
+        console.log("done evaluating " + submissionEvaluated + " submission for accepted submission count");
       }
     });
   },

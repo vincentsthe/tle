@@ -33,13 +33,39 @@ problemService.incrementSubmissionCount = function (problemJid, count, callback)
       problemJid: problemJid
     }
   }).then(function (problem) {
-    problem.update({
-      totalSubmission: problem.totalSubmission + count
-    }).then(function () {
+    if (problem) {
+      problem.update({
+        totalSubmission: problem.totalSubmission + count
+      }).then(function () {
+        callback(null);
+      }, function (err) {
+        callback(err);
+      });
+    } else {
       callback(null);
-    }, function (err) {
-      callback(err);
-    });
+    }
+  }, function (err) {
+    callback(err);
+  });
+};
+
+problemService.incrementAcceptedSubmissionCount = function (problemJid, count, callback) {
+  ProblemModel.findOne({
+    where: {
+      problemJid: problemJid
+    }
+  }).then(function (problem) {
+    if (problem) {
+      problem.update({
+        acceptedSubmission: problem.acceptedSubmission + count
+      }).then(function () {
+        callback(null);
+      }, function (err) {
+        callback(err);
+      });
+    } else {
+      callback(null);
+    }
   }, function (err) {
     callback(err);
   });

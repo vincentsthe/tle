@@ -5,6 +5,40 @@ var GradingModel = require('../models/db/GradingModel');
 
 var gradingService = {};
 
+var constructGradingFromModel = function (gradingModel) {
+  var grading = new Grading();
+  grading.setId(gradingModel.id)
+        .setSubmissionJid(gradingModel.submissionJid)
+        .setScore(gradingModel.score)
+        .setVerdictCode(gradingModel.verdictCode)
+        .setVerdictName(gradingModel.verdictName)
+        .setEvaluated(gradingModel.evaluated)
+        .setUserJid(gradingModel.userJid)
+        .setProblemJid(gradingModel.problemJid);
+
+  return grading;
+};
+
+gradingService.getGradingDataByLastId = function (lastId, limit, callback) {
+  GradingModel.findAll({
+    where: {
+      id: {
+        $gt: lastId
+      }
+    },
+    limit: limit,
+    order: 'id ASC'
+  }).then(function (gradingRecords) {
+    var gradings = _.map(gradingRecords, function (gradingRecord) {
+      return constructGradingFromModel(gradingRecord)
+    });
+
+    callback(null, gradings);
+  }, function (err) {
+    callback(err);
+  });
+};
+
 gradingService.insertGradingData = function (gradings, callback) {
   var values = _.map(gradings, function (grading) {
     return {
@@ -33,19 +67,8 @@ gradingService.getUnevaluatedGradingData = function (limit, callback) {
     limit: limit,
     order: 'id ASC'
   }).then(function (gradings) {
-    var result = [];
-    gradings.forEach(function (grading) {
-      var record = new Grading();
-      record.setId(grading.id)
-            .setSubmissionJid(grading.submissionJid)
-            .setScore(grading.score)
-            .setVerdictCode(grading.verdictCode)
-            .setVerdictName(grading.verdictName)
-            .setEvaluated(grading.evaluated)
-            .setUserJid(grading.userJid)
-            .setProblemJid(grading.problemJid);
-
-      result.push(record);
+    var result = _.map(gradings, function (grading) {
+      return constructGradingFromModel(grading);
     });
 
     callback(null, result);
