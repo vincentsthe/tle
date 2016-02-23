@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 16, 2016 at 01:42 PM
+-- Generation Time: Feb 24, 2016 at 06:57 AM
 -- Server version: 5.6.25
 -- PHP Version: 5.5.26
 
@@ -42,7 +42,10 @@ CREATE TABLE IF NOT EXISTS `grading` (
   `submission_jid` varchar(255) NOT NULL,
   `score` int(11) DEFAULT NULL,
   `verdict_code` varchar(64) DEFAULT NULL,
-  `verdict_name` varchar(64) DEFAULT NULL
+  `verdict_name` varchar(64) DEFAULT NULL,
+  `evaluated` tinyint(4) DEFAULT '0',
+  `user_jid` varchar(255) NOT NULL,
+  `problem_jid` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -86,8 +89,8 @@ CREATE TABLE IF NOT EXISTS `submission` (
   `verdict_code` varchar(64) DEFAULT NULL,
   `score` int(11) DEFAULT NULL,
   `user_jid` varchar(255) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `timestamp` datetime NOT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  `submit_time` int(11) NOT NULL,
   `language` varchar(64) NOT NULL,
   `problem_jid` varchar(255) NOT NULL,
   `problem_slug` varchar(255) DEFAULT NULL,
@@ -128,10 +131,17 @@ CREATE TABLE IF NOT EXISTS `verdict` (
 --
 
 --
+-- Indexes for table `accepted_submission`
+--
+ALTER TABLE `accepted_submission`
+  ADD PRIMARY KEY (`problem_id`,`user_id`);
+
+--
 -- Indexes for table `grading`
 --
 ALTER TABLE `grading`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `evaluated` (`evaluated`);
 
 --
 -- Indexes for table `last_id`
@@ -143,19 +153,23 @@ ALTER TABLE `last_id`
 -- Indexes for table `problem`
 --
 ALTER TABLE `problem`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `problem_jid_2` (`problem_jid`),
+  ADD KEY `problem_jid` (`problem_jid`);
 
 --
 -- Indexes for table `submission`
 --
 ALTER TABLE `submission`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `submission_jid` (`submission_jid`);
 
 --
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_jid` (`user_jid`);
 
 --
 -- Indexes for table `verdict`
