@@ -44,6 +44,7 @@ var getProblemSubmissionCountMap = function (submissions) {
 };
 
 // TODO: it should use transaction
+// TODO: does not handle the case if problem_jid and submission_jid is missing
 submissionEvaluator.evaluateSubmission = function (limit, callback) {
   async.waterfall([
     function (callback) {

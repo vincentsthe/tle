@@ -5,6 +5,8 @@ var Grading = function () {
   this.verdictCode = "";
   this.verdictName = "";
   this.evaluated = false;
+  this.userJid = "";
+  this.problemJid = "";
 };
 
 Grading.prototype.setId = function (id) {
@@ -37,6 +39,16 @@ Grading.prototype.setEvaluated = function (evaluated) {
   return this;
 };
 
+Grading.prototype.setUserJid = function (userJid) {
+  this.userJid = userJid;
+  return this;
+};
+
+Grading.prototype.setProblemJid = function (problemJid) {
+  this.problemJid = problemJid;
+  return this;
+};
+
 Grading.prototype.getId = function () {
   return this.id;
 };
@@ -59,6 +71,14 @@ Grading.prototype.getVerdictName = function () {
 
 Grading.prototype.isEvaluated = function () {
   return this.evaluated;
+};
+
+Grading.prototype.getUserJid = function () {
+  return this.userJid;
+};
+
+Grading.prototype.getProblemJid = function () {
+  return this.problemJid;
 };
 
 module.exports = Grading;

@@ -64,7 +64,7 @@ scheduler.importGrading = new CronJob({
       }
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.updateUserName = new CronJob({
@@ -106,7 +106,7 @@ scheduler.evaluateSubmissionCount = new CronJob({
       }
     });
   },
-  start: true
+  start: false
 });
 
 module.exports = scheduler;

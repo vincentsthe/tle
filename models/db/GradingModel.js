@@ -24,6 +24,14 @@ var GradingModel = sequelizeConnection.define('grading', {
   },
   evaluated: {
     type: sequelize.BOOLEAN
+  },
+  userJid: {
+    type: sequelize.STRING,
+    field: 'user_jid'
+  },
+  problemJid: {
+    type: sequelize.STRING,
+    field: 'problem_jid'
   }
 });
 

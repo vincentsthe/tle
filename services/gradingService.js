@@ -12,7 +12,9 @@ gradingService.insertGradingData = function (gradings, callback) {
       score: grading.getScore(),
       verdictCode: grading.getVerdictCode(),
       verdictName: grading.getVerdictName(),
-      evaluated: grading.isEvaluated()
+      evaluated: grading.isEvaluated(),
+      userJid: grading.getUserJid(),
+      problemJid: grading.getProblemJid()
     };
   });
 
@@ -39,7 +41,9 @@ gradingService.getUnevaluatedGradingData = function (limit, callback) {
             .setScore(grading.score)
             .setVerdictCode(grading.verdictCode)
             .setVerdictName(grading.verdictName)
-            .setEvaluated(grading.evaluated);
+            .setEvaluated(grading.evaluated)
+            .setUserJid(grading.userJid)
+            .setProblemJid(grading.problemJid);
 
       result.push(record);
     });

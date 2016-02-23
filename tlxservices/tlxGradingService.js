@@ -5,9 +5,10 @@ var tlxGradingService = {};
 
 tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback) {
   knexConnection.jerahmeel
-    .select("id", "submissionJid", "score", "verdictCode", "verdictName")
-    .from("jerahmeel_programming_grading")
-    .where('id', '>', lastId)
+    .select("grading.id AS id", "grading.submissionJid AS submissionJid", "grading.score AS score", "grading.verdictCode AS verdictCode", "grading.verdictName AS verdictName", "submission.userCreate AS userJid", "submission.problemJid AS problemJid")
+    .from("jerahmeel_programming_grading AS grading")
+    .join("jerahmeel_programming_submission AS submission", "submission.jid", "=", "grading.submissionJid")
+    .where('grading.id', '>', lastId)
     .limit(limit)
     .then(function (gradingRecords) {
       var gradings = [];
@@ -20,7 +21,9 @@ tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback)
           .setScore(gradingRecord.score)
           .setVerdictCode(gradingRecord.verdictCode)
           .setVerdictName(gradingRecord.verdictName)
-          .setEvaluated(false);
+          .setEvaluated(false)
+          .setUserJid(gradingRecord.userJid)
+          .setProblemJid(gradingRecord.problemJid);
 
         gradings.push(grading);
       });
