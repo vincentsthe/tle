@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 24, 2016 at 06:57 AM
+-- Generation Time: Feb 24, 2016 at 02:21 PM
 -- Server version: 5.6.25
 -- PHP Version: 5.5.26
 
@@ -19,17 +19,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `etl`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `accepted_submission`
---
-
-CREATE TABLE IF NOT EXISTS `accepted_submission` (
-  `problem_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -117,6 +106,17 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `user_accepted_submission`
+--
+
+CREATE TABLE IF NOT EXISTS `user_accepted_submission` (
+  `problem_jid` varchar(255) NOT NULL,
+  `user_jid` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `verdict`
 --
 
@@ -129,12 +129,6 @@ CREATE TABLE IF NOT EXISTS `verdict` (
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `accepted_submission`
---
-ALTER TABLE `accepted_submission`
-  ADD PRIMARY KEY (`problem_id`,`user_id`);
 
 --
 -- Indexes for table `grading`
@@ -170,6 +164,12 @@ ALTER TABLE `submission`
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `user_jid` (`user_jid`);
+
+--
+-- Indexes for table `user_accepted_submission`
+--
+ALTER TABLE `user_accepted_submission`
+  ADD PRIMARY KEY (`problem_jid`,`user_jid`);
 
 --
 -- Indexes for table `verdict`
