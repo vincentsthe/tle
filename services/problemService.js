@@ -87,4 +87,26 @@ problemService.incrementAcceptedSubmissionCount = function (problemJid, count, c
   });
 };
 
+problemService.incrementAcceptedUserCount = function (problemJid, count, callback) {
+  ProblemModel.findOne({
+    where: {
+      problemJid: problemJid
+    }
+  }).then(function (problem) {
+    if (problem) {
+      problem.update({
+        acceptedUser: problem.acceptedUser + count
+      }).then(function () {
+        callback(null);
+      }, function (err) {
+        callback(err);
+      });
+    } else {
+      callback(null);
+    }
+  }, function (err) {
+    callback(err);
+  });
+};
+
 module.exports = problemService;

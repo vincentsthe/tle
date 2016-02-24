@@ -7,6 +7,7 @@ lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY = "problemset_problem";
 lastIdService.COURSE_PROBLEM_LAST_ID_KEY = "course_problem";
 lastIdService.SUBMISSION_EVALUATED_LAST_ID = "evaluated_submission";
 lastIdService.ACCEPTED_SUBMISSION_EVALUATED_LAST_ID = "accepted_evaluated_submission";
+lastIdService.ACCEPTED_PROBLEM_EVALUATED_LAST_ID = "accepted_problem_evaluated_submission";
 
 var insertKeyLastId  = function (key, callback) {
   LastIdModel.create({
