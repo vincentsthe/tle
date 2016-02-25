@@ -1,4 +1,4 @@
-var knexConnection = require('../knexConnection');
+var knexConnection = require('../core/knexConnection');
 var Submission = require('../models/Submission');
 
 var tlxSubmissionService = {};

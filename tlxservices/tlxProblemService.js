@@ -1,6 +1,6 @@
 var _ = require("underscore");
 
-var knexConnection = require('../knexConnection');
+var knexConnection = require('../core/knexConnection');
 var Problem = require('../models/Problem');
 
 var tlxProblemService = {};

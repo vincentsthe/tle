@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var async = require('async');
 
-var submissionService = require('../services/submissionService')
-var tlxProblemService = require('../tlxservices/tlxProblemService');
-var tlxSubmissionService = require('../tlxservices/tlxSubmissionService');
-var tlxUserService = require('../tlxservices/tlxUserService');
+var submissionService = require('../../services/submissionService')
+var tlxProblemService = require('../../tlxservices/tlxProblemService');
+var tlxSubmissionService = require('../../tlxservices/tlxSubmissionService');
+var tlxUserService = require('../../tlxservices/tlxUserService');
 
 var submissionMigrator = {};
 

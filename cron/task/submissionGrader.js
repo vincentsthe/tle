@@ -1,7 +1,7 @@
 var async = require('async');
 
-var gradingService = require('../services/gradingService');
-var submissionService = require('../services/submissionService');
+var gradingService = require('../../services/gradingService');
+var submissionService = require('../../services/submissionService');
 
 var submissionGrader = {};
 

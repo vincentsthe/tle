@@ -1,15 +1,15 @@
-var CronTask = require('./CronTask');
+var CronTask = require('./core/CronTask');
 
-var problemMigrator = require('./migrator/problemMigrator');
-var userMigrator = require('./migrator/userMigrator');
-var submissionMigrator = require('./migrator/submissionMigrator');
-var gradingMigrator = require('./migrator/gradingMigrator');
+var problemMigrator = require('./cron/migrator/problemMigrator');
+var userMigrator = require('./cron/migrator/userMigrator');
+var submissionMigrator = require('./cron/migrator/submissionMigrator');
+var gradingMigrator = require('./cron/migrator/gradingMigrator');
 
-var acceptedSubmissionEvaluator = require('./task/acceptedSubmissionEvaluator');
-var acceptedUserProblemEvaluator = require('./task/acceptedUserProblemEvaluator');
-var submissionEvaluator = require('./task/submissionEvaluator');
-var submissionGrader = require('./task/submissionGrader');
-var userNameUpdater = require('./task/userNameUpdater');
+var acceptedSubmissionEvaluator = require('./cron/task/acceptedSubmissionEvaluator');
+var acceptedUserProblemEvaluator = require('./cron/task/acceptedUserProblemEvaluator');
+var submissionEvaluator = require('./cron/task/submissionEvaluator');
+var submissionGrader = require('./cron/task/submissionGrader');
+var userNameUpdater = require('./cron/task/userNameUpdater');
 
 var scheduler = {};
 

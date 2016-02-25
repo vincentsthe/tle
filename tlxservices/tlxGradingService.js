@@ -1,4 +1,4 @@
-var knexConnection = require('../knexConnection');
+var knexConnection = require('../core/knexConnection');
 var Grading = require('../models/Grading');
 
 var tlxGradingService = {};

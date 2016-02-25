@@ -1,10 +1,10 @@
 var _ = require('underscore');
 var async = require('async');
 
-var lastIdService = require('../services/lastIdService');
-var problemService = require('../services/problemService');
-var submissionService = require('../services/submissionService');
-var userService = require('../services/userService');
+var lastIdService = require('../../services/lastIdService');
+var problemService = require('../../services/problemService');
+var submissionService = require('../../services/submissionService');
+var userService = require('../../services/userService');
 
 var submissionEvaluator = {};
 

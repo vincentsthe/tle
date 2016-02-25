@@ -1,7 +1,7 @@
 var async = require('async');
 
-var userService = require('../services/userService');
-var tlxUserService = require('../tlxservices/tlxUserService');
+var userService = require('../../services/userService');
+var tlxUserService = require('../../tlxservices/tlxUserService');
 
 var userMigrator = {};
 
