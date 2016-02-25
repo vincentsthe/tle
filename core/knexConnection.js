@@ -1,5 +1,5 @@
 var knex = require('knex');
-var dbConfig = require('../dbConfig.json').database;
+var dbConfig = require('../config.json').database;
 
 var knexConnection = {};
 

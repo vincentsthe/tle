@@ -26,7 +26,7 @@ scheduler.importProblem = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.importUser = new CronTask({
@@ -42,7 +42,7 @@ scheduler.importUser = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.importSubmission = new CronTask({
@@ -58,7 +58,7 @@ scheduler.importSubmission = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.importGrading = new CronTask({
@@ -74,7 +74,7 @@ scheduler.importGrading = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.updateUserName = new CronTask({
@@ -90,7 +90,7 @@ scheduler.updateUserName = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.gradeSubmission = new CronTask({
@@ -106,7 +106,7 @@ scheduler.gradeSubmission = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.evaluateSubmissionCount = new CronTask({
@@ -122,7 +122,7 @@ scheduler.evaluateSubmissionCount = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.evaluateAcceptedSubmissionCount = new CronTask({
@@ -138,7 +138,7 @@ scheduler.evaluateAcceptedSubmissionCount = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.evaluateAccepterUserProblemCount = new CronTask({

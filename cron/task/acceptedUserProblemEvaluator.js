@@ -38,9 +38,11 @@ acceptedUserProblemEvaluator.evaluateAcceptedUserProblem = function (limit, call
       });
     }, function (lastId, callback) {
       gradingService.getGradingDataByLastId(lastId, limit, function (err, gradings) {
-        maxId = _.max(gradings, function (grading) {
-          return grading.getId();
-        }).getId();
+        if (gradings.length) {
+          maxId = _.max(gradings, function (grading) {
+            return grading.getId();
+          }).getId();
+        }
 
         callback(err, gradings);
       });

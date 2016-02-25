@@ -71,9 +71,12 @@ submissionEvaluator.evaluateSubmission = function (limit, callback) {
         callback(err, submissions);
       });
     }, function (submissions, callback) {
-      var maxId = _.max(submissions, function (submission) {
-        return submission.getId();
-      }).getId();
+      var maxId = 0;
+      if (submissions.length) {
+        maxId = _.max(submissions, function (submission) {
+          return submission.getId();
+        }).getId();
+      }
 
       lastIdService.updateLastId(lastIdService.SUBMISSION_EVALUATED_LAST_ID, maxId, function (err) {
         callback(err, submissions.length);

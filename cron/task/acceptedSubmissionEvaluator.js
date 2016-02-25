@@ -79,9 +79,12 @@ acceptedSubmissionEvaluator.evaluateAcceptedSubmission = function (limit, callba
         callback(err, gradings);
       });
     }, function (gradings, callback) {
-      var maxId = _.max(gradings, function (grading) {
-        return grading.getId();
-      }).getId();
+      var maxId = 0;
+      if (gradings.length) {
+        maxId = _.max(gradings, function (grading) {
+          return grading.getId();
+        }).getId();
+      }
 
       lastIdService.updateLastId(lastIdService.ACCEPTED_SUBMISSION_EVALUATED_LAST_ID, maxId, function (err) {
         callback(err, gradings.length);

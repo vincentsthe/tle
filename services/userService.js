@@ -20,6 +20,39 @@ var constructUserFromModel = function (userModel) {
   return user;
 };
 
+userService.getUserJidToUserMap = function (userJids, callback) {
+  userService.getUserByJids(userJids, function (err, users) {
+    if (err) {
+      callback(err);
+    } else {
+      var map = {};
+      users.forEach(function (user) {
+        map[user.getUserJid()] = user;
+      });
+
+      callback(null, map);
+    }
+  });
+};
+
+userService.getUserByJids = function (userJids, callback) {
+  UserModel.findAll({
+    where: {
+      userJid: {
+        $in: userJids
+      }
+    }
+  }).then(function (userModels) {
+    var users = _.map(userModels, function (userModel) {
+      return constructUserFromModel(userModel);
+    });
+
+    callback(null, users);
+  }, function (err) {
+    callback(err);
+  });
+};
+
 userService.getUserByLastId = function (lastId, limit, callback) {
   UserModel.findAll({
     where: {

@@ -1,5 +1,29 @@
-extends layout
+doctype html
+html
+  head
+    title TLE
+    link(rel='stylesheet', href='/stylesheets/bootstrap.min.css')
 
-block content
-  h1= title
-  p Welcome to #{title}
+  body
+    nav.navbar.navbar-inverse
+      .container
+        .navbar-header
+          a.navbar-brand= "TLE"
+
+    .container
+      table.table.table-striped
+        thead
+          tr
+            th id
+            th Submitter
+            th Jid
+            th accepted
+            th submissions
+        tbody
+          each user in users
+            tr
+              td= user.id
+              td= user.username + "  (" + user.name + ")"
+              td= user.userJid
+              td= user.acceptedProblem
+              td= user.totalSubmission
