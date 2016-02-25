@@ -1,0 +1,32 @@
+{
+  "database" : {
+    "db": {
+      "host": "localhost",
+      "user": "root",
+      "password": "rahasia",
+      "database": "etl"
+    },
+    "jophiel": {
+      "host": "localhost",
+      "user": "root",
+      "password": "rahasia",
+      "database": "judgels_jophiel"
+    },
+    "sandalphon": {
+      "host": "localhost",
+      "user": "root",
+      "password": "rahasia",
+      "database": "judgels_sandalphon"
+    },
+    "jerahmeel": {
+      "host": "localhost",
+      "user": "root",
+      "password": "rahasia",
+      "database": "judgels_jerahmeel"
+    }
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379
+  }
+}

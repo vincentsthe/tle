@@ -1,6 +1,6 @@
 var sequelize = require('sequelize');
 
-var dbConfig = require('../../dbConfig.json');
+var dbConfig = require('../../config.json').database;
 
 var sequelizeConnection = new sequelize(dbConfig.db.database, dbConfig.db.user, dbConfig.db.password, {
   host: dbConfig.db.host,

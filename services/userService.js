@@ -1,9 +1,43 @@
 var _ = require('underscore');
 
+var User = require('../models/User');
 var UserModel = require('../models/db/UserModel');
 var UserAcceptedSubmissionModel = require('../models/db/UserAcceptedSubmissionModel');
 
 var userService = {};
+
+var constructUserFromModel = function (userModel) {
+  var user = new User();
+  user.setId(userModel.id)
+      .setJophielUserId(userModel.jophielUserId)
+      .setUserJid(userModel.userJid)
+      .setUsername(userModel.username)
+      .setName(userModel.name)
+      .setAcceptedSubmission(userModel.acceptedSubmission)
+      .setTotalSubmission(userModel.totalSubmission)
+      .setAcceptedProblem(userModel.acceptedProblem);
+
+  return user;
+};
+
+userService.getUserByLastId = function (lastId, limit, callback) {
+  UserModel.findAll({
+    where: {
+      id: {
+        $gt: lastId
+      }
+    },
+    limit: limit
+  }).then(function (userModels) {
+    var users = _.map(userModels, function (userModel) {
+      return constructUserFromModel(userModel);
+    });
+
+    callback(null, users);
+  }, function (err) {
+    callback(err);
+  });
+};
 
 userService.getLastJophielUserId = function (callback) {
   UserModel.max('jophielUserId').then(function (lastId) {
