@@ -4,6 +4,7 @@ var async = require('async');
 var gradingService = require('../../services/gradingService');
 var lastIdService = require('../../services/lastIdService');
 var problemService = require('../../services/problemService');
+var userRankService = require('../../tleModuleServices/userRankService');
 var userService = require('../../services/userService');
 
 var acceptedUserProblemEvaluator = {};
@@ -84,7 +85,13 @@ acceptedUserProblemEvaluator.evaluateAcceptedUserProblem = function (limit, call
 
       async.each(userJids, function (userJid, callback) {
         userService.incrementAcceptedProblemCount(userJid, userJidToCountMap[userJid], function (err) {
-          callback(err);
+          if (err) {
+            callback(err);
+          } else {
+            userRankService.incrementAcceptedProblem(userJid, userJidToCountMap[userJid], function (err) {
+              callback(err);
+            });
+          }
         });
       }, function (err) {
         callback(err, newSubmission);

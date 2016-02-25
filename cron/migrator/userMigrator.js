@@ -1,6 +1,7 @@
 var async = require('async');
 
 var userService = require('../../services/userService');
+var tleUserService = require('../../tleModuleServices/userRankService');
 var tlxUserService = require('../../tlxservices/tlxUserService');
 
 var userMigrator = {};
@@ -16,8 +17,16 @@ userMigrator.migrate = function (limit, callback) {
         callback(err, users);
       });
     }, function (userRecords, callback) {
-      userService.insertUser(userRecords, function (err, result) {
-        callback(err, result);
+      userService.insertUser(userRecords, function (err) {
+        callback(err, userRecords);
+      });
+    }, function (userRecords, callback) {
+      async.each(userRecords, function (userRecord, callback) {
+        tleUserService.insertUserRecord(userRecord.getUserJid(), 0, function (err) {
+          callback(err);
+        });
+      }, function (err) {
+        callback(err, userRecords.length);
       });
     }
   ], function (err, result) {
