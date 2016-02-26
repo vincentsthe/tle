@@ -2,6 +2,7 @@ var _ = require('underscore');
 var async = require('async');
 
 var lastIdService = require('../../services/lastIdService');
+var problemRankService = require('../../tleModuleServices/problemRankService');
 var problemService = require('../../services/problemService');
 var tlxProblemService = require('../../tlxservices/tlxProblemService');
 
@@ -75,11 +76,19 @@ problemMigrator.migrate = function (limit, callback) {
     }, function (problems, problemsetMaxId, courseMaxId, callback) {
       if (problems.length) {
         problemService.insertProblem(problems, function (err) {
-          callback(err, problems.length, problemsetMaxId, courseMaxId);
+          callback(err, problems, problemsetMaxId, courseMaxId);
         });
       } else {
         callback(null, 0, 0, 0);
       }
+    }, function (problems, problemsetMaxId, courseMaxId, callback) {
+      async.each(problems, function (problem, callback) {
+        problemRankService.insertProblemRecord(problem.getProblemJid(), 0, function (err) {
+          callback(err);
+        });
+      }, function (err) {
+        callback(err, problems.length, problemsetMaxId, courseMaxId);
+      });
     }, function (problemCount, problemsetMaxId, courseMaxId, callback) {
       lastIdService.updateLastId(lastIdService.PROBLEMSET_PROBLEM_LAST_ID_KEY, problemsetMaxId, function (err) {
         callback(err, problemCount, courseMaxId);

@@ -22,9 +22,13 @@ userRankService.init = function (callback) {
         return lastRecordCount == QUERY_PER_BATCH;
       }, function (callback) {
         userService.getUserByLastId(lastId, QUERY_PER_BATCH, function (err, users) {
-          lastId = _.max(users, function (user) {
-            return user.getId();
-          }).getId();
+          if (users.length) {
+            lastId = _.max(users, function (user) {
+              return user.getId();
+            }).getId();
+          } else {
+            lastId++;
+          }
           lastRecordCount = users.length;
 
           if (err) {

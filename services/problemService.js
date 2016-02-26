@@ -1,8 +1,74 @@
 var _ = require('underscore');
 
+var Problem = require('../models/Problem');
 var ProblemModel = require('../models/db/ProblemModel');
 
 var problemService = {};
+
+var constructProblemFromModel = function (problemModel) {
+  var problem = new Problem();
+  problem.setId(problemModel.id)
+        .setProblemJid(problemModel.problemJid)
+        .setSlug(problemModel.slug)
+        .setAcceptedUser(problemModel.acceptedUser)
+        .setTotalSubmission(problemModel.totalSubmission)
+        .setAcceptedSubmission(problemModel.acceptedSubmission)
+        .setUrl(problemModel.url);
+
+  return problem;
+};
+
+problemService.getProblemJidToProblemMap = function (problemJids, callback) {
+  problemService.getProblemByJids(problemJids, function (err, problems) {
+    if (err) {
+      callback(err);
+    } else {
+      var map = {};
+      problems.forEach(function (problem) {
+        map[problem.getProblemJid()] = problem;
+      });
+
+      callback(null, map);
+    }
+  });
+};
+
+problemService.getProblemByLastId = function (lastId, limit, callback) {
+  ProblemModel.findAll({
+    where: {
+      id: {
+        $gt: lastId
+      }
+    },
+    limit: limit
+  }).then(function (problemRecords) {
+    var problems = _.map(problemRecords, function (problemRecord) {
+      return constructProblemFromModel(problemRecord);
+    });
+
+    callback(null, problems);
+  }, function (err) {
+    callback(err);
+  });
+};
+
+problemService.getProblemByJids = function (problemJids, callback) {
+  ProblemModel.findAll({
+    where: {
+      problemJid: {
+        $in: problemJids
+      }
+    }
+  }).then(function (problemRecords) {
+    var problems = _.map(problemRecords, function (problemRecord) {
+      return constructProblemFromModel(problemRecord);
+    });
+
+    callback(null, problems);
+  }, function (err) {
+    callback(err);
+  });
+};
 
 problemService.insertProblem = function (problems, callback) {
   if (problems.length) {

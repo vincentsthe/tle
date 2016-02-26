@@ -11,19 +11,42 @@ html
           a.navbar-brand= "TLE"
 
     .container
+      .text-center
+        h1 Next Problem to Solve
+      table.table.table-striped
+        thead
+          tr
+            th id
+            th Problems
+            th Accepted User
+            th Total Submissions
+            th Accepted Submissions
+        tbody
+          each problem in problems
+            tr
+              td= problem.id
+              td= problem.slug
+              td= problem.acceptedUser
+              td= problem.totalSubmission
+              td= problem.acceptedSubmission
+
+    hr
+    .container
+      .text-center
+        h1 Top User
       table.table.table-striped
         thead
           tr
             th id
             th Submitter
-            th Jid
             th accepted
-            th submissions
+            th total submissions
+            th accepted submissions
         tbody
           each user in users
             tr
               td= user.id
               td= user.username + "  (" + user.name + ")"
-              td= user.userJid
               td= user.acceptedProblem
               td= user.totalSubmission
+              td= user.acceptedSubmission

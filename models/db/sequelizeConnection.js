@@ -8,7 +8,8 @@ var sequelizeConnection = new sequelize(dbConfig.db.database, dbConfig.db.user, 
   define: {
     timestamps: false,
     freezeTableName: true
-  }
+  },
+  logging: false
 });
 
 module.exports = sequelizeConnection;
