@@ -5,6 +5,71 @@ var SubmissionModel = require('../models/db/SubmissionModel');
 
 var submissionService = {};
 
+var constructSubmissionFromModel = function (submissionModel) {
+  var submission = new Submission();
+  submission.setId(submissionModel.id)
+            .setJerahmeelSubmissionId(submissionModel.jerahmeelSubmissionId)
+            .setSubmissionJid(submissionModel.submissionJid)
+            .setVerdictCode(submissionModel.verdictCode)
+            .setVerdictName(submissionModel.verdictName)
+            .setScore(submissionModel.score)
+            .setUserJid(submissionModel.userJid)
+            .setUsername(submissionModel.username)
+            .setLanguage(submissionModel.language)
+            .setSubmitTime(submissionModel.submitTime)
+            .setProblemJid(submissionModel.problemJid)
+            .setProblemSlug(submissionModel.problemSlug);
+
+  return submission;
+};
+
+submissionService.getSubmissionJidToSubmissionMap = function (submissionJids, callback) {
+  submissionService.getSubmissionByJids(submissionJids, function (err, submissions) {
+    if (err) {
+      callback(err);
+    } else {
+      var map = {};
+      submissions.forEach(function (submission) {
+        map[submission.getSubmissionJid()] = submission;
+      });
+
+      callback(err, map);
+    }
+  });
+};
+
+submissionService.getSubmissionByJids = function (submissionJids, callback) {
+  SubmissionModel.findAll({
+    where: {
+      submissionJid: {
+        $in: submissionJids
+      }
+    }
+  }).then(function (submissionModels) {
+    var submissions = _.map(submissionModels, function (submissionModel) {
+      return constructSubmissionFromModel(submissionModel);
+    });
+    callback(null, submissions);
+  }, function (err) {
+    callback(err);
+  });
+};
+
+submissionService.getLatestSubmission = function (limit, callback) {
+  SubmissionModel.findAll({
+    limit: limit,
+    order: 'id DESC'
+  }).then(function (submissionRecords) {
+    var submissions = _.map(submissionRecords, function (submissionRecord) {
+      return constructSubmissionFromModel(submissionRecord);
+    });
+
+    callback(null, submissions);
+  }, function (err) {
+    callback(err);
+  });
+};
+
 submissionService.getLastJerahmeelId = function (callback) {
   SubmissionModel.max('jerahmeelSubmissionId').then(function (lastId) {
     if (lastId) {
@@ -28,20 +93,7 @@ submissionService.getSubmissionByLastId = function (lastId, limit, callback) {
   }).then(function (submissionRecords) {
     var submissions = [];
     submissionRecords.forEach(function (submissionRecord) {
-      var submission = new Submission();
-      submission.setId(submissionRecord.id)
-        .setJerahmeelSubmissionId(submissionRecord.jerahmeelSubmissionId)
-        .setSubmissionJid(submissionRecord.submissionJid)
-        .setVerdictCode(submissionRecord.verdictCode)
-        .setVerdictName(submissionRecord.verdictName)
-        .setScore(submissionRecord.score)
-        .setUserJid(submissionRecord.userJid)
-        .setUsername(submissionRecord.username)
-        .setLanguage(submissionRecord.language)
-        .setSubmitTime(submissionRecord.submitTime)
-        .setProblemJid(submissionRecord.problemJid)
-        .setProblemSlug(submissionRecord.problemSlug);
-
+      var submission = constructSubmissionFromModel(submissionRecord);
       submissions.push(submission);
     });
 

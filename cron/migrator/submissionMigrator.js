@@ -46,7 +46,7 @@ submissionMigrator.migrate = function (limit, callback) {
           records.forEach(function (record) {
             record.setUsername(usernameMap[record.getUserJid()]);
           });
-          
+
           callback(null, records);
         }
       });

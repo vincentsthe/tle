@@ -9,7 +9,28 @@ html
       .container
         .navbar-header
           a.navbar-brand= "TLE"
+    .container
+      h1 Recent Submission
+      table.table.table-striped
+        thead
+          tr
+            th id
+            th user
+            th problem
+            th verdict
+            th score
+            th time
+        tbody
+          each submission in submissions
+            tr
+              td= submission.id
+              td= submission.username
+              td= submission.problemSlug
+              td= submission.verdictName
+              td= submission.score
+              td= submission.submitTime
 
+    hr
     .container
       .text-center
         h1 Next Problem to Solve

@@ -4,11 +4,13 @@ var router = express.Router();
 
 var userRankService = require('../tleModuleServices/userRankService');
 var problemRankService = require('../tleModuleServices/problemRankService');
+var recentSubmissionService = require('../tleModuleServices/recentSubmissionService');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var userRanks = [];
   var problemRanks = [];
+  var recentSubmissions = [];
 
   async.parallel([
     function (callback) {
@@ -21,6 +23,11 @@ router.get('/', function(req, res, next) {
         problemRanks = problems;
         callback(err);
       });
+    }, function (callback) {
+      recentSubmissionService.getLatestSubmission(10, function (err, submissions) {
+        recentSubmissions = submissions;
+        callback(err);
+      });
     }
   ], function (err) {
     if(err) {
@@ -28,7 +35,8 @@ router.get('/', function(req, res, next) {
     }
     res.render('index', {
       users: userRanks,
-      problems: problemRanks
+      problems: problemRanks,
+      submissions: recentSubmissions
     });
   });
 });
