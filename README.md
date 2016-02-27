@@ -14,9 +14,10 @@ TLE is a statistic aggregator for TLX, inspired by uHunt (http://uhunt.felix-hal
 * In database config, db is the database you created (from db.sql) and the other is TLX database credential
 
 ## Launching TLE
-* Run `node init.js`, this script used to populate redis cache
-* After init.js finish executing, run `node server.js` and `node cron.js`
+* Run `node server.js`, this script will populate the redis cache (invalidating the previous cache first) and start the server
+* After init.js finish executing, run `node cron.js` to run the cron
 * TODO: create script to manage launch script
+* NOTE: cron script also updating the redis too, so it's important to run the server script first
 
 ## Concept
 TLE use aggregated data heavily and will make TLX database load became very high.

@@ -6,6 +6,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 
+var init = require('./init');
+
 var routes = require('./routes/index');
 var user = require('./routes/user');
 
@@ -109,8 +111,14 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+init.initializeRedis(function (err) {
+  if (err) {
+    console.error("error initializing app: " + err);
+  } else {
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  }
+});
 
 module.exports = app;
