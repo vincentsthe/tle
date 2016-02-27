@@ -23,12 +23,12 @@ submissionMigrator.migrate = function (limit, callback) {
         return record.getProblemJid();
       });
 
-      tlxProblemService.getProblemSlugsByJids(problemJids, function (err, problemSlugsMap) {
+      tlxProblemService.getProblemJidToProblemMap(problemJids, function (err, problemMap) {
         if (err) {
           callback(err);
         } else {
           records.forEach(function (record) {
-            record.setProblemSlug(problemSlugsMap[record.getProblemJid()]);
+            record.setProblemSlug(problemMap[record.getProblemJid()].slug);
           });
 
           callback(null, records);

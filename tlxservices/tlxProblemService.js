@@ -62,18 +62,18 @@ tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, cal
     });
 };
 
-tlxProblemService.getProblemSlugsByJids = function (problemJids, callback) {
+tlxProblemService.getProblemJidToProblemMap = function (problemJids, callback) {
   knexConnection.sandalphon
     .select("id", "jid", "slug")
     .from("sandalphon_problem")
     .whereIn("jid", problemJids)
     .then(function (problems) {
-      var problemSlugsMap = {};
+      var problemMap = {};
       problems.forEach(function (problem) {
-        problemSlugsMap[problem.jid] = problem.slug;
+        problemMap[problem.jid] = problem;
       });
 
-      callback(null, problemSlugsMap);
+      callback(null, problemMap);
     }, function (err) {
       callback(err);
     });

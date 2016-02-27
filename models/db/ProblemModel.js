@@ -7,6 +7,10 @@ var ProblemModel = sequelzieConnection.define('problem', {
     type: sequelize.INTEGER,
     primaryKey: true
   },
+  sandalphonProblemId: {
+    type: sequelize.INTEGER,
+    field: 'sandalphon_problem_id'
+  },
   problemJid: {
     type: sequelize.STRING,
     field: 'problem_jid'

@@ -37,12 +37,13 @@ problemMigrator.migrate = function (limit, callback) {
         return problem.getProblemJid();
       });
 
-      tlxProblemService.getProblemSlugsByJids(problemJids, function (err, problemSlugsMap) {
+      tlxProblemService.getProblemJidToProblemMap(problemJids, function (err, problemMap) {
         if (err) {
           callback(err);
         } else {
           problems.forEach(function (problem) {
-            problem.setSlug(problemSlugsMap[problem.getProblemJid()]);
+            problem.setSlug(problemMap[problem.getProblemJid()].slug)
+                  .setSandalphonProblemId(problemMap[problem.getProblemJid()].id);
           });
 
           callback(null, problems, problemsetMaxId, courseMaxId);

@@ -1,5 +1,6 @@
 var Problem = function () {
   this.id = 0;
+  this.sandalphonProblemId = 0;
   this.problemJid = "";
   this.slug = "";
   this.acceptedUser = 0;
@@ -10,6 +11,11 @@ var Problem = function () {
 
 Problem.prototype.setId = function (id) {
   this.id = id;
+  return this;
+};
+
+Problem.prototype.setSandalphonProblemId = function (sandalphonProblemId) {
+  this.sandalphonProblemId = sandalphonProblemId;
   return this;
 };
 
@@ -45,6 +51,10 @@ Problem.prototype.setUrl = function (url) {
 
 Problem.prototype.getId = function () {
   return this.id;
+};
+
+Problem.prototype.getSandalphonProblemId = function () {
+  return this.sandalphonProblemId;
 };
 
 Problem.prototype.getProblemJid = function () {

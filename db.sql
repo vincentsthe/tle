@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 24, 2016 at 02:21 PM
+-- Generation Time: Feb 27, 2016 at 08:52 AM
 -- Server version: 5.6.25
 -- PHP Version: 5.5.26
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `etl`
+-- Database: `tle`
 --
 
 -- --------------------------------------------------------
@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `last_id` (
 
 CREATE TABLE IF NOT EXISTS `problem` (
   `id` int(11) NOT NULL,
+  `sandalphon_problem_id` int(11) NOT NULL,
   `problem_jid` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `accepted_user` int(11) NOT NULL,
@@ -149,7 +150,8 @@ ALTER TABLE `last_id`
 ALTER TABLE `problem`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `problem_jid_2` (`problem_jid`),
-  ADD KEY `problem_jid` (`problem_jid`);
+  ADD KEY `problem_jid` (`problem_jid`),
+  ADD KEY `sandalphon_problem_id` (`sandalphon_problem_id`);
 
 --
 -- Indexes for table `submission`
