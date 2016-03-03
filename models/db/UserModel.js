@@ -7,10 +7,6 @@ var UserModel = sequelizeConnection.define('user', {
     type: sequelize.INTEGER,
     primaryKey: true
   },
-  jophielUserId: {
-    type: sequelize.STRING,
-    field: 'jophiel_user_id'
-  },
   userJid: {
     type: sequelize.STRING,
     field: 'user_jid'

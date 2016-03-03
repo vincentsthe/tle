@@ -19,7 +19,8 @@ tlxProblemService.fetchProblemFromJerahmeelProblemset = function (lastId, limit,
         maxId = Math.max(maxId, problemRecord.id);
 
         var problem = new Problem();
-        problem.setProblemJid(problemRecord.problemJid)
+        problem.setId(problemRecord.id)
+          .setProblemJid(problemRecord.problemJid)
           .setUrl("/problemsets/" + problemRecord.problemsetId + "/problems/" + problemRecord.id + "/");
 
         problems.push(problem);
@@ -50,7 +51,8 @@ tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, cal
         maxId = Math.max(maxId, problemRecord.session_problem_id);
 
         var problem = new Problem();
-        problem.setProblemJid(problemRecord.problem_jid)
+        problem.setId(problemRecord.id)
+          .setProblemJid(problemRecord.problem_jid)
           .setUrl("/training/curriculums/" + problemRecord.curriculum_id + "/courses/" + problemRecord.curriculum_course_id + "/sessions/" + problemRecord.session_id + "/problems/" + problemRecord.session_problem_id + "/");
 
         problems.push(problem);

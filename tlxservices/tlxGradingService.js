@@ -17,7 +17,8 @@ tlxGradingService.fetchGradingFromJerahmeel = function (lastId, limit, callback)
         maxId = Math.max(maxId, gradingRecord.id);
 
         var grading = new Grading();
-        grading.setSubmissionJid(gradingRecord.submissionJid)
+        grading.setId(gradingRecord.id)
+          .setSubmissionJid(gradingRecord.submissionJid)
           .setScore(gradingRecord.score)
           .setVerdictCode(gradingRecord.verdictCode)
           .setVerdictName(gradingRecord.verdictName)

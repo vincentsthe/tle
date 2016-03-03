@@ -42,6 +42,7 @@ gradingService.getGradingDataByLastId = function (lastId, limit, callback) {
 gradingService.insertGradingData = function (gradings, callback) {
   var values = _.map(gradings, function (grading) {
     return {
+      id: grading.getId(),
       submissionJid: grading.getSubmissionJid(),
       score: grading.getScore(),
       verdictCode: grading.getVerdictCode(),

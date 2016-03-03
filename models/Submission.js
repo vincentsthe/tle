@@ -1,6 +1,5 @@
 var Submission = function () {
   this.id = 0;
-  this.jerahmeelSubmissionId = "";
   this.submissionJid = "";
   this.verdictCode = null;
   this.verdictName = null;
@@ -15,11 +14,6 @@ var Submission = function () {
 
 Submission.prototype.setId = function (id) {
   this.id = id;
-  return this;
-};
-
-Submission.prototype.setJerahmeelSubmissionId = function (jerahmeelSubmissionId) {
-  this.jerahmeelSubmissionId = jerahmeelSubmissionId;
   return this;
 };
 
@@ -75,10 +69,6 @@ Submission.prototype.setProblemSlug = function (problemSlug) {
 
 Submission.prototype.getId = function () {
   return this.id;
-};
-
-Submission.prototype.getJerahmeelSubmissionId = function () {
-  return this.jerahmeelSubmissionId;
 };
 
 Submission.prototype.getSubmissionJid = function () {

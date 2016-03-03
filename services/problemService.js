@@ -8,7 +8,6 @@ var problemService = {};
 var constructProblemFromModel = function (problemModel) {
   var problem = new Problem();
   problem.setId(problemModel.id)
-        .setSandalphonProblemId(problemModel.sandalphonProblemId)
         .setProblemJid(problemModel.problemJid)
         .setSlug(problemModel.slug)
         .setAcceptedUser(problemModel.acceptedUser)
@@ -75,7 +74,7 @@ problemService.insertProblem = function (problems, callback) {
   if (problems.length) {
     var values = _.map(problems, function (problem) {
       return {
-        sandalphonProblemId: problem.getSandalphonProblemId(),
+        id: problem.getId(),
         problemJid: problem.getProblemJid(),
         slug: problem.getSlug(),
         acceptedUser: problem.getAcceptedUser(),

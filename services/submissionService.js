@@ -8,7 +8,6 @@ var submissionService = {};
 var constructSubmissionFromModel = function (submissionModel) {
   var submission = new Submission();
   submission.setId(submissionModel.id)
-            .setJerahmeelSubmissionId(submissionModel.jerahmeelSubmissionId)
             .setSubmissionJid(submissionModel.submissionJid)
             .setVerdictCode(submissionModel.verdictCode)
             .setVerdictName(submissionModel.verdictName)
@@ -71,7 +70,7 @@ submissionService.getLatestSubmission = function (limit, callback) {
 };
 
 submissionService.getLastJerahmeelId = function (callback) {
-  SubmissionModel.max('jerahmeelSubmissionId').then(function (lastId) {
+  SubmissionModel.max('id').then(function (lastId) {
     if (lastId) {
       callback(null, lastId);
     } else {
@@ -106,7 +105,7 @@ submissionService.getSubmissionByLastId = function (lastId, limit, callback) {
 submissionService.insertSubmission = function (submissions, callback) {
   var values = _.map(submissions, function (submission) {
     return {
-      jerahmeelSubmissionId: submission.getJerahmeelSubmissionId(),
+      id: submission.getId(),
       submissionJid: submission.getSubmissionJid(),
       userJid: submission.getUserJid(),
       username: submission.getUsername(),

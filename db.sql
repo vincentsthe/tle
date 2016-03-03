@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Feb 27, 2016 at 08:52 AM
+-- Generation Time: Mar 03, 2016 at 09:43 AM
 -- Server version: 5.6.25
--- PHP Version: 5.5.26
+-- PHP Version: 5.5.31
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -57,7 +57,6 @@ CREATE TABLE IF NOT EXISTS `last_id` (
 
 CREATE TABLE IF NOT EXISTS `problem` (
   `id` int(11) NOT NULL,
-  `sandalphon_problem_id` int(11) NOT NULL,
   `problem_jid` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `accepted_user` int(11) NOT NULL,
@@ -74,7 +73,6 @@ CREATE TABLE IF NOT EXISTS `problem` (
 
 CREATE TABLE IF NOT EXISTS `submission` (
   `id` int(11) NOT NULL,
-  `jerahmeel_submission_id` int(11) NOT NULL,
   `submission_jid` varchar(255) NOT NULL,
   `verdict_code` varchar(64) DEFAULT NULL,
   `score` int(11) DEFAULT NULL,
@@ -95,7 +93,6 @@ CREATE TABLE IF NOT EXISTS `submission` (
 
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL,
-  `jophiel_user_id` int(11) NOT NULL,
   `user_jid` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -150,8 +147,7 @@ ALTER TABLE `last_id`
 ALTER TABLE `problem`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `problem_jid_2` (`problem_jid`),
-  ADD KEY `problem_jid` (`problem_jid`),
-  ADD KEY `sandalphon_problem_id` (`sandalphon_problem_id`);
+  ADD KEY `problem_jid` (`problem_jid`);
 
 --
 -- Indexes for table `submission`
@@ -184,29 +180,9 @@ ALTER TABLE `verdict`
 --
 
 --
--- AUTO_INCREMENT for table `grading`
---
-ALTER TABLE `grading`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
 -- AUTO_INCREMENT for table `last_id`
 --
 ALTER TABLE `last_id`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `problem`
---
-ALTER TABLE `problem`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `submission`
---
-ALTER TABLE `submission`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `user`
---
-ALTER TABLE `user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `verdict`

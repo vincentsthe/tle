@@ -7,10 +7,6 @@ var SubmissionModel = sequelizeConnection.define('submission', {
     type: sequelize.INTEGER,
     primaryKey: true
   },
-  jerahmeelSubmissionId: {
-    type: sequelize.INTEGER,
-    field: 'jerahmeel_submission_id'
-  },
   submissionJid: {
     type: sequelize.STRING,
     field: 'submission_jid'

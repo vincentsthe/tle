@@ -1,6 +1,5 @@
 var User = function () {
   this.id = "";
-  this.jophielUserId = "";
   this.userJid = "";
   this.username = "";
   this.name = "";
@@ -11,11 +10,6 @@ var User = function () {
 
 User.prototype.setId = function (id) {
   this.id = id;
-  return this;
-};
-
-User.prototype.setJophielUserId = function (jophielUserId) {
-  this.jophielUserId = jophielUserId;
   return this;
 };
 
@@ -51,10 +45,6 @@ User.prototype.setAcceptedProblem = function (acceptedProblem) {
 
 User.prototype.getId = function () {
   return this.id;
-};
-
-User.prototype.getJophielUserId = function () {
-  return this.jophielUserId;
 };
 
 User.prototype.getUserJid = function () {

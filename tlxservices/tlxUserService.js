@@ -14,7 +14,7 @@ tlxUserService.fetchUser = function (offset, limit, callback) {
       var users = [];
       userRecords.forEach(function (userRecord) {
         var user = new User();
-        user.setJophielUserId(userRecord.jophiel_id)
+        user.setId(userRecord.id)
           .setUserJid(userRecord.jid)
           .setUsername(userRecord.username)
           .setName(userRecord.name);
@@ -30,7 +30,7 @@ tlxUserService.fetchUser = function (offset, limit, callback) {
 
 tlxUserService.fetchUserFromJophielFromLastId = function (lastId, limit, callback) {
   knexConnection.jophiel
-    .select('id AS jophiel_id', 'jid', 'username', 'name')
+    .select('id', 'jid', 'username', 'name')
     .from('jophiel_user')
     .where('id', '>', lastId)
     .limit(limit)
@@ -38,7 +38,7 @@ tlxUserService.fetchUserFromJophielFromLastId = function (lastId, limit, callbac
       var users = [];
       userRecords.forEach(function (userRecord) {
         var user = new User();
-        user.setJophielUserId(userRecord.jophiel_id)
+        user.setId(userRecord.id)
           .setUserJid(userRecord.jid)
           .setUsername(userRecord.username)
           .setName(userRecord.name);

@@ -13,7 +13,7 @@ tlxSubmissionService.fetchSubmissionFromJerahmeel = function (lastId, limit, cal
       var submissions = [];
       submissionRecords.forEach(function (submissionRecord) {
         var submission = new Submission();
-        submission.setJerahmeelSubmissionId(submissionRecord.id)
+        submission.setId(submissionRecord.id)
           .setSubmissionJid(submissionRecord.jid)
           .setProblemJid(submissionRecord.problemJid)
           .setUserJid(submissionRecord.userJid)

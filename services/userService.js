@@ -9,7 +9,6 @@ var userService = {};
 var constructUserFromModel = function (userModel) {
   var user = new User();
   user.setId(userModel.id)
-      .setJophielUserId(userModel.jophielUserId)
       .setUserJid(userModel.userJid)
       .setUsername(userModel.username)
       .setName(userModel.name)
@@ -73,7 +72,7 @@ userService.getUserByLastId = function (lastId, limit, callback) {
 };
 
 userService.getLastJophielUserId = function (callback) {
-  UserModel.max('jophielUserId').then(function (lastId) {
+  UserModel.max('id').then(function (lastId) {
     if (lastId) {
       callback(null, lastId);
     } else {
@@ -88,7 +87,7 @@ userService.insertUser = function (users, callback) {
   if (users.length) {
     var values = _.map(users, function (user) {
       return {
-        jophielUserId: user.getJophielUserId(),
+        id: user.getId(),
         userJid: user.getUserJid(),
         username: user.getUsername(),
         name: user.getName(),

@@ -43,7 +43,7 @@ problemMigrator.migrate = function (limit, callback) {
         } else {
           problems.forEach(function (problem) {
             problem.setSlug(problemMap[problem.getProblemJid()].slug)
-                  .setSandalphonProblemId(problemMap[problem.getProblemJid()].id);
+                  .setId(problemMap[problem.getProblemJid()].id);
           });
 
           callback(null, problems, problemsetMaxId, courseMaxId);
