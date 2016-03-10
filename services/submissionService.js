@@ -102,22 +102,19 @@ submissionService.getSubmissionByLastId = function (lastId, limit, callback) {
   });
 };
 
-submissionService.insertSubmission = function (submissions, callback) {
-  var values = _.map(submissions, function (submission) {
-    return {
-      id: submission.getId(),
-      submissionJid: submission.getSubmissionJid(),
-      userJid: submission.getUserJid(),
-      username: submission.getUsername(),
-      submitTime: submission.getSubmitTime(),
-      language: submission.getLanguage(),
-      problemJid: submission.getProblemJid(),
-      problemSlug: submission.getProblemSlug()
-    };
-  });
-
-  SubmissionModel.bulkCreate(values).then(function () {
-    callback(null, submissions.length);
+submissionService.insertSubmission = function (id, submissionJid, userId, problemId, language, submitTime, callback) {
+  SubmissionModel.create({
+    id: id,
+    submissionJid: submissionJid,
+    userId: userId,
+    problemId: problemId,
+    language: language,
+    submitTime: submitTime,
+    score: 0,
+    verdictCode: "",
+    verdictName: ""
+  }).then(function () {
+    callback(null);
   }, function (err) {
     callback(err);
   });

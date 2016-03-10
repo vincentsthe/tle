@@ -1,5 +1,7 @@
+var _ = require('underscore');
+
 var knexConnection = require('../core/knexConnection');
-var Submission = require('../models/Submission');
+var TlxSubmissionModel = require('../models/tlxModels/TlxSubmissionModel');
 
 var tlxSubmissionService = {};
 
@@ -10,20 +12,18 @@ tlxSubmissionService.fetchSubmissionFromJerahmeel = function (lastId, limit, cal
     .where('id', '>', lastId)
     .limit(limit)
     .then(function (submissionRecords) {
-      var submissions = [];
-      submissionRecords.forEach(function (submissionRecord) {
-        var submission = new Submission();
-        submission.setId(submissionRecord.id)
-          .setSubmissionJid(submissionRecord.jid)
-          .setProblemJid(submissionRecord.problemJid)
-          .setUserJid(submissionRecord.userJid)
-          .setLanguage(submissionRecord.language)
-          .setSubmitTime(submissionRecord.timeCreate / 1000);
-
-        submissions.push(submission);
+      var tlxSubmissionModels = _.map(submissionRecords, function (submissionRecord) {
+        var tlxSubmissionModel = new TlxSubmissionModel();
+        tlxSubmissionModel.setId(submissionRecord.id)
+                          .setJid(submissionRecord.jid)
+                          .setUserJid(submissionRecord.userJid)
+                          .setProblemJid(submissionRecord.problemJid)
+                          .setLanguage(submissionRecord.language)
+                          .setTimeCreate(submissionRecord.timeCreate);
+        return tlxSubmissionModel;
       });
 
-      callback(null, submissions);
+      callback(null, tlxSubmissionModels);
     }, function (err) {
       callback(err);
     });

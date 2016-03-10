@@ -7,9 +7,17 @@ var GradingModel = sequelizeConnection.define('grading', {
     type: sequelize.INTEGER,
     primaryKey: true
   },
-  submissionJid: {
-    type: sequelize.STRING,
-    field: 'submission_jid'
+  submissionId: {
+    type: sequelize.INTEGER,
+    field: 'submission_id'
+  },
+  userId: {
+    type: sequelize.INTEGER,
+    field: 'user_id'
+  },
+  problemId: {
+    type: sequelize.INTEGER,
+    field: 'problem_id'
   },
   score: {
     type: sequelize.INTEGER
@@ -24,14 +32,6 @@ var GradingModel = sequelizeConnection.define('grading', {
   },
   evaluated: {
     type: sequelize.BOOLEAN
-  },
-  userJid: {
-    type: sequelize.STRING,
-    field: 'user_jid'
-  },
-  problemJid: {
-    type: sequelize.STRING,
-    field: 'problem_jid'
   }
 });
 

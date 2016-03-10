@@ -70,28 +70,20 @@ problemService.getProblemByJids = function (problemJids, callback) {
   });
 };
 
-problemService.insertProblem = function (problems, callback) {
-  if (problems.length) {
-    var values = _.map(problems, function (problem) {
-      return {
-        id: problem.getId(),
-        problemJid: problem.getProblemJid(),
-        slug: problem.getSlug(),
-        acceptedUser: problem.getAcceptedUser(),
-        totalSubmission: problem.getTotalSubmission(),
-        acceptedSubmission: problem.getAcceptedSubmission(),
-        url: problem.getUrl()
-      };
-    });
-
-    ProblemModel.bulkCreate(values).then(function () {
-      callback(null, problems.length)
-    }, function (err) {
-      callback(err);
-    });
-  } else {
-    callback(null);
-  }
+problemService.insertProblem = function (id, problemJid, slug, url, callback) {
+  ProblemModel.create({
+    id: id,
+    problemJid: problemJid,
+    slug: slug,
+    url: url,
+    acceptedUser: 0,
+    totalSubmission: 0,
+    acceptedSubmission: 0
+  }).then(function () {
+    callback();
+  }, function (err) {
+    callback(err);
+  });
 };
 
 problemService.existByJid = function (problemJid, callback) {

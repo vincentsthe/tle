@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 03, 2016 at 09:43 AM
+-- Generation Time: Mar 10, 2016 at 10:09 PM
 -- Server version: 5.6.25
 -- PHP Version: 5.5.31
 
@@ -28,13 +28,13 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `grading` (
   `id` int(11) NOT NULL,
-  `submission_jid` varchar(255) NOT NULL,
+  `submission_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `problem_id` int(11) NOT NULL,
   `score` int(11) DEFAULT NULL,
   `verdict_code` varchar(64) DEFAULT NULL,
   `verdict_name` varchar(64) DEFAULT NULL,
-  `evaluated` tinyint(4) DEFAULT '0',
-  `user_jid` varchar(255) NOT NULL,
-  `problem_jid` varchar(255) NOT NULL
+  `evaluated` tinyint(4) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -76,12 +76,10 @@ CREATE TABLE IF NOT EXISTS `submission` (
   `submission_jid` varchar(255) NOT NULL,
   `verdict_code` varchar(64) DEFAULT NULL,
   `score` int(11) DEFAULT NULL,
-  `user_jid` varchar(255) NOT NULL,
-  `username` varchar(255) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
   `submit_time` int(11) NOT NULL,
   `language` varchar(64) NOT NULL,
-  `problem_jid` varchar(255) NOT NULL,
-  `problem_slug` varchar(255) DEFAULT NULL,
+  `problem_id` int(11) NOT NULL,
   `verdict_name` varchar(64) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -108,8 +106,8 @@ CREATE TABLE IF NOT EXISTS `user` (
 --
 
 CREATE TABLE IF NOT EXISTS `user_accepted_submission` (
-  `problem_jid` varchar(255) NOT NULL,
-  `user_jid` varchar(255) NOT NULL
+  `problem_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -167,7 +165,7 @@ ALTER TABLE `user`
 -- Indexes for table `user_accepted_submission`
 --
 ALTER TABLE `user_accepted_submission`
-  ADD PRIMARY KEY (`problem_jid`,`user_jid`);
+  ADD PRIMARY KEY (`problem_id`,`user_id`);
 
 --
 -- Indexes for table `verdict`

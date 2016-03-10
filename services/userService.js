@@ -83,28 +83,20 @@ userService.getLastJophielUserId = function (callback) {
   });
 };
 
-userService.insertUser = function (users, callback) {
-  if (users.length) {
-    var values = _.map(users, function (user) {
-      return {
-        id: user.getId(),
-        userJid: user.getUserJid(),
-        username: user.getUsername(),
-        name: user.getName(),
-        acceptedSubmission: user.getAcceptedSubmission(),
-        totalSubmission: user.getTotalSubmission(),
-        acceptedProblem: user.getAcceptedProblem()
-      };
-    });
-
-    UserModel.bulkCreate(values).then(function () {
-      callback(null, users.length);
-    }, function (err) {
-      callback(err);
-    });
-  } else {
+userService.insertUser = function (id, userJid, username, name, callback) {
+  UserModel.create({
+    id: id,
+    userJid: userJid,
+    username: username,
+    name: name,
+    acceptedSubmission: 0,
+    totalSubmission: 0,
+    acceptedProblem: 0
+  }).then(function () {
     callback(null);
-  }
+  }, function (err) {
+    callback(err);
+  });
 };
 
 userService.changeName = function (userJid, name, callback) {

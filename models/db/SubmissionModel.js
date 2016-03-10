@@ -22,12 +22,9 @@ var SubmissionModel = sequelizeConnection.define('submission', {
   score: {
     type: sequelize.INTEGER
   },
-  userJid: {
-    type: sequelize.STRING,
-    field: 'user_jid'
-  },
-  username: {
-    type: sequelize.STRING
+  userId: {
+    type: sequelize.INTEGER,
+    field: 'user_id'
   },
   submitTime: {
     type: sequelize.INTEGER,
@@ -36,13 +33,9 @@ var SubmissionModel = sequelizeConnection.define('submission', {
   language: {
     type: sequelize.STRING
   },
-  problemJid: {
-    type: sequelize.STRING,
-    field: 'problem_jid'
-  },
-  problemSlug: {
-    type: sequelize.STRING,
-    field: 'problem_slug'
+  problemId: {
+    type: sequelize.INTEGER,
+    field: 'problem_id'
   }
 });
 

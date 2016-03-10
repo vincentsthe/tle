@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var async = require('async');
 
 var userService = require('../../services/userService');
@@ -13,20 +14,24 @@ userMigrator.migrate = function (limit, callback) {
         callback(err, lastId);
       });
     }, function (lastId, callback) {
-      tlxUserService.fetchUserFromJophielFromLastId(lastId, limit, function (err, users) {
-        callback(err, users);
+      tlxUserService.fetchUserFromJophielFromLastId(lastId, limit, function (err, tlxUserModels) {
+        callback(err, tlxUserModels);
       });
-    }, function (userRecords, callback) {
-      userService.insertUser(userRecords, function (err) {
-        callback(err, userRecords);
-      });
-    }, function (userRecords, callback) {
-      async.each(userRecords, function (userRecord, callback) {
-        tleUserService.insertUserRecord(userRecord.getUserJid(), 0, function (err) {
+    }, function (tlxUserModels, callback) {
+      async.each(tlxUserModels, function (tlxUserModel, callback) {
+        userService.insertUser(tlxUserModel.getId(), tlxUserModel.getJid(), tlxUserModel.getUsername(), tlxUserModel.getName(), function (err) {
           callback(err);
         });
       }, function (err) {
-        callback(err, userRecords.length);
+        callback(err, tlxUserModels);
+      });
+    }, function (tlxUserModels, callback) {
+      async.each(tlxUserModels, function (tlxUserModel, callback) {
+        tleUserService.insertUserRecord(tlxUserModel.getJid(), 0, function (err) {
+          callback(err);
+        });
+      }, function (err) {
+        callback(err, tlxUserModels.length);
       });
     }
   ], function (err, result) {

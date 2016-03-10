@@ -1,7 +1,9 @@
 var _ = require("underscore");
 
 var knexConnection = require('../core/knexConnection');
-var Problem = require('../models/Problem');
+var TlxCourseProblemModel = require('../models/tlxModels/TlxCourseProblemModel');
+var TlxProblemModel = require('../models/tlxModels/TlxProblemModel');
+var TlxProblemsetProblemModel = require('../models/tlxModels/TlxProblemsetProblemModel');
 
 var tlxProblemService = {};
 
@@ -13,20 +15,16 @@ tlxProblemService.fetchProblemFromJerahmeelProblemset = function (lastId, limit,
     .where('problem_set_problem.id', '>', lastId)
     .limit(limit)
     .then(function (problemRecords) {
-      var problems = [];
-      var maxId = 0;
-      problemRecords.forEach(function (problemRecord) {
-        maxId = Math.max(maxId, problemRecord.id);
+      var tlxProblemsetProblemModels = _.map(problemRecords, function (problemRecord) {
+        var tlxProblemsetProblemModel = new TlxProblemsetProblemModel();
+        tlxProblemsetProblemModel.setId(problemRecord.id)
+                                .setProblemJid(problemRecord.problemJid)
+                                .setProblemsetId(problemRecord.problemsetId);
 
-        var problem = new Problem();
-        problem.setId(problemRecord.id)
-          .setProblemJid(problemRecord.problemJid)
-          .setUrl("/problemsets/" + problemRecord.problemsetId + "/problems/" + problemRecord.id + "/");
-
-        problems.push(problem);
+        return tlxProblemsetProblemModel;
       });
 
-      callback(null, problems,  maxId);
+      callback(null, tlxProblemsetProblemModels);
     }, function (err) {
       callback(err);
     });
@@ -45,20 +43,18 @@ tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, cal
     .andWhere('session_problem.id', '>', lastId)
     .limit(limit)
     .then(function (problemRecords) {
-      var problems = [];
-      var maxId = 0;
-      problemRecords.forEach(function (problemRecord) {
-        maxId = Math.max(maxId, problemRecord.session_problem_id);
+      var tlxCourseProblemModels = _.map(problemRecords, function (problemRecord) {
+        var tlxCourseProblemModel = new TlxCourseProblemModel();
+        tlxCourseProblemModel.setId(problemRecord.session_problem_id)
+                            .setProblemJid(problemRecord.problem_jid)
+                            .setSessionId(problemRecord.session_id)
+                            .setCurriculumCourseId(problemRecord.curriculum_course_id)
+                            .setCurriculumId(problemRecord.curriculum_id);
 
-        var problem = new Problem();
-        problem.setId(problemRecord.id)
-          .setProblemJid(problemRecord.problem_jid)
-          .setUrl("/training/curriculums/" + problemRecord.curriculum_id + "/courses/" + problemRecord.curriculum_course_id + "/sessions/" + problemRecord.session_id + "/problems/" + problemRecord.session_problem_id + "/");
-
-        problems.push(problem);
+        return tlxCourseProblemModel;
       });
 
-      callback(null, problems,  maxId);
+      callback(null, tlxCourseProblemModels);
     }, function (err) {
       console.log(err);
     });
@@ -72,10 +68,36 @@ tlxProblemService.getProblemJidToProblemMap = function (problemJids, callback) {
     .then(function (problems) {
       var problemMap = {};
       problems.forEach(function (problem) {
-        problemMap[problem.jid] = problem;
+        var tlxProblemModel = new TlxProblemModel();
+        tlxProblemModel.setId(problem.id)
+                      .setJid(problem.jid)
+                      .setSlug(problem.slug);
+
+        problemMap[problem.jid] = tlxProblemModel;
       });
 
       callback(null, problemMap);
+    }, function (err) {
+      callback(err);
+    });
+};
+
+tlxProblemService.getProblemByJid = function (problemJid, callback) {
+  knexConnection.sandalphon
+    .from("sandalphon_problem")
+    .where("jid", problemJid)
+    .then(function (problems) {
+      if (problems.length == 0) {
+        callback(null, null);
+      } else {
+        var problem = problems[0];
+        var tlxProblemModel = new TlxProblemModel();
+        tlxProblemModel.setId(problem.id)
+                      .setJid(problem.jid)
+                      .setSlug(problem.slug);
+
+        callback(null, tlxProblemModel);
+      }
     }, function (err) {
       callback(err);
     });

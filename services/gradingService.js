@@ -39,22 +39,18 @@ gradingService.getGradingDataByLastId = function (lastId, limit, callback) {
   });
 };
 
-gradingService.insertGradingData = function (gradings, callback) {
-  var values = _.map(gradings, function (grading) {
-    return {
-      id: grading.getId(),
-      submissionJid: grading.getSubmissionJid(),
-      score: grading.getScore(),
-      verdictCode: grading.getVerdictCode(),
-      verdictName: grading.getVerdictName(),
-      evaluated: grading.isEvaluated(),
-      userJid: grading.getUserJid(),
-      problemJid: grading.getProblemJid()
-    };
-  });
-
-  GradingModel.bulkCreate(values).then(function () {
-    callback(null, gradings.length);
+gradingService.insertGrading = function (id, submissionId, score, verdictCode, verdictName, userId, problemId, callback) {
+  GradingModel.create({
+    id: id,
+    submissionId: submissionId,
+    score: score,
+    verdictCode: verdictCode,
+    verdictName: verdictName,
+    userId: userId,
+    problemId: problemId,
+    evaluated: false
+  }).then(function () {
+    callback();
   }, function (err) {
     callback(err);
   });

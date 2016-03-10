@@ -1,5 +1,8 @@
+var _ = require('underscore');
+
 var knexConnection = require('../core/knexConnection');
 var User = require('../models/User');
+var TlxUserModel = require('../models/tlxModels/TlxUserModel');
 
 var tlxUserService = {};
 
@@ -35,35 +38,54 @@ tlxUserService.fetchUserFromJophielFromLastId = function (lastId, limit, callbac
     .where('id', '>', lastId)
     .limit(limit)
     .then(function (userRecords) {
-      var users = [];
-      userRecords.forEach(function (userRecord) {
-        var user = new User();
-        user.setId(userRecord.id)
-          .setUserJid(userRecord.jid)
-          .setUsername(userRecord.username)
-          .setName(userRecord.name);
+      var tlxUserModels = _.map(userRecords, function (userRecord) {
+        var tlxUserModel = new TlxUserModel();
+        tlxUserModel.setId(userRecord.id)
+                    .setJid(userRecord.jid)
+                    .setUsername(userRecord.username)
+                    .setName(userRecord.name);
 
-        users.push(user);
+        return tlxUserModel;
       });
 
-      callback(null, users);
+      callback(null, tlxUserModels);
     }, function (err) {
       callback(err);
     });
 };
 
-tlxUserService.getUserUsernameByJids = function (userJids, callback) {
-  knexConnection.jophiel
-    .select("id", "jid", "username")
-    .from("jophiel_user")
-    .whereIn("jid", userJids)
-    .then(function (users) {
-      var usernameMap = {};
-      users.forEach(function (user) {
-        usernameMap[user.jid] = user.username;
+tlxUserService.getUserJidToUserMap = function (userJids, callback) {
+  tlxUserService.getUserByJids(userJids, function (err, userModels) {
+    if (err) {
+      callback(err);
+    } else {
+      var userMap = {};
+      userModels.forEach(function (user) {
+        userMap[user.getJid()] = user;
       });
 
-      callback(null, usernameMap);
+      callback(null, userMap);
+    }
+  });
+};
+
+tlxUserService.getUserByJids = function (userJids, callback) {
+  knexConnection.jophiel
+    .select('id', 'jid', 'username', 'name')
+    .from('jophiel_user')
+    .whereIn('jid', userJids)
+    .then(function (userRecords) {
+      var tlxUserModels = _.map(userRecords, function (userRecord) {
+        var tlxUserModel = new TlxUserModel();
+        tlxUserModel.setId(userRecord.id)
+          .setJid(userRecord.jid)
+          .setUsername(userRecord.username)
+          .setName(userRecord.name);
+
+        return tlxUserModel;
+      });
+
+      callback(null, tlxUserModels);
     }, function (err) {
       callback(err);
     });
