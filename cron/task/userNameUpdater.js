@@ -17,7 +17,7 @@ userNameUpdater.updateUserName = function (callback) {
     }, function (callback) {
       tlxUserService.fetchUser(offset, QUERY_PER_BATCH, function (err, users) {
         async.each(users, function (user, callback) {
-          userService.changeName(user.getUserJid(), user.getName(), function (err) {
+          userService.changeName(user.getJid(), user.getName(), function (err) {
             callback(err);
           });
         }, function (err) {

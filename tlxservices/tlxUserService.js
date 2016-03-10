@@ -1,7 +1,6 @@
 var _ = require('underscore');
 
 var knexConnection = require('../core/knexConnection');
-var User = require('../models/User');
 var TlxUserModel = require('../models/tlxModels/TlxUserModel');
 
 var tlxUserService = {};
@@ -14,18 +13,17 @@ tlxUserService.fetchUser = function (offset, limit, callback) {
     .limit(limit)
     .orderBy('id', 'ASC')
     .then(function (userRecords) {
-      var users = [];
-      userRecords.forEach(function (userRecord) {
-        var user = new User();
-        user.setId(userRecord.id)
-          .setUserJid(userRecord.jid)
+      var tlxUserModels = _.map(userRecords, function (userRecord) {
+        var tlxUserModel = new TlxUserModel();
+        tlxUserModel.setId(userRecord.id)
+          .setJid(userRecord.jid)
           .setUsername(userRecord.username)
           .setName(userRecord.name);
 
-        users.push(user);
+        return tlxUserModel;
       });
 
-      callback(null, users);
+      callback(null, tlxUserModels);
     }, function (err) {
       callback(err);
     });

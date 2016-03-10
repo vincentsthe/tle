@@ -90,7 +90,7 @@ scheduler.updateUserName = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.gradeSubmission = new CronTask({
