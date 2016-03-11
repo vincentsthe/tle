@@ -19,7 +19,7 @@ scheduler.importProblem = new CronTask({
     problemMigrator.migrate(100, function (err, problemCount) {
       if (err) {
         console.log("error migrating problem: " + err);
-      } else {
+      } else if (problemCount) {
         console.log("success migratng " + problemCount + " problems");
       }
 
@@ -51,7 +51,7 @@ scheduler.importSubmission = new CronTask({
     submissionMigrator.migrate(100, function (err, submissionCount) {
       if (err) {
         console.log("error migrating submission: " + err);
-      } else {
+      } else if (submissionCount) {
         console.log("success migrating " + submissionCount + " submissions");
       }
 
@@ -67,7 +67,7 @@ scheduler.importGrading = new CronTask({
     gradingMigrator.migrate(100, function (err, gradingCount) {
       if (err) {
         console.log("error migrating grading: " + err);
-      } else {
+      } else if (gradingCount) {
         console.log("success migrating " + gradingCount + " grading");
       }
 
@@ -106,7 +106,7 @@ scheduler.gradeSubmission = new CronTask({
       callback();
     });
   },
-  start: false
+  start: true
 });
 
 scheduler.evaluateSubmissionCount = new CronTask({

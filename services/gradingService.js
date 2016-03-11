@@ -8,13 +8,13 @@ var gradingService = {};
 var constructGradingFromModel = function (gradingModel) {
   var grading = new Grading();
   grading.setId(gradingModel.id)
-        .setSubmissionJid(gradingModel.submissionJid)
+        .setSubmissionId(gradingModel.submissionId)
         .setScore(gradingModel.score)
         .setVerdictCode(gradingModel.verdictCode)
         .setVerdictName(gradingModel.verdictName)
         .setEvaluated(gradingModel.evaluated)
-        .setUserJid(gradingModel.userJid)
-        .setProblemJid(gradingModel.problemJid);
+        .setUserId(gradingModel.userId)
+        .setProblemId(gradingModel.problemId);
 
   return grading;
 };

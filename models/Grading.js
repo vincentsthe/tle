@@ -1,12 +1,12 @@
 var Grading = function () {
   this.id = 0;
-  this.submissionJid = "";
+  this.submissionId = "";
   this.score = null;
   this.verdictCode = "";
   this.verdictName = "";
   this.evaluated = false;
-  this.userJid = "";
-  this.problemJid = "";
+  this.userId = "";
+  this.problemId = "";
 };
 
 Grading.prototype.setId = function (id) {
@@ -14,8 +14,8 @@ Grading.prototype.setId = function (id) {
   return this;
 };
 
-Grading.prototype.setSubmissionJid = function (submissionJid) {
-  this.submissionJid = submissionJid;
+Grading.prototype.setSubmissionId = function (submissionId) {
+  this.submissionId = submissionId;
   return this;
 };
 
@@ -39,13 +39,13 @@ Grading.prototype.setEvaluated = function (evaluated) {
   return this;
 };
 
-Grading.prototype.setUserJid = function (userJid) {
-  this.userJid = userJid;
+Grading.prototype.setUserId = function (userId) {
+  this.userId = userId;
   return this;
 };
 
-Grading.prototype.setProblemJid = function (problemJid) {
-  this.problemJid = problemJid;
+Grading.prototype.setProblemId = function (problemId) {
+  this.problemId = problemId;
   return this;
 };
 
@@ -53,8 +53,8 @@ Grading.prototype.getId = function () {
   return this.id;
 };
 
-Grading.prototype.getSubmissionJid = function () {
-  return this.submissionJid;
+Grading.prototype.getSubmissionId = function () {
+  return this.submissionId;
 };
 
 Grading.prototype.getScore = function () {
@@ -73,12 +73,12 @@ Grading.prototype.isEvaluated = function () {
   return this.evaluated;
 };
 
-Grading.prototype.getUserJid = function () {
-  return this.userJid;
+Grading.prototype.getUserId = function () {
+  return this.userId;
 };
 
-Grading.prototype.getProblemJid = function () {
-  return this.problemJid;
+Grading.prototype.getProblemId = function () {
+  return this.problemId;
 };
 
 module.exports = Grading;

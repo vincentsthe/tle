@@ -120,17 +120,17 @@ submissionService.insertSubmission = function (id, submissionJid, userId, proble
   });
 };
 
-submissionService.updateSubmissionGrading = function (grading, callback) {
+submissionService.updateSubmissionGrading = function (submissionId, score, verdictCode, verdictName, callback) {
   SubmissionModel.findOne({
     where: {
-      submissionJid: grading.getSubmissionJid()
+      id: submissionId
     }
   }).then(function (submission) {
     if (submission) {
       submission.update({
-        score: grading.getScore(),
-        verdictCode: grading.getVerdictCode(),
-        verdictName: grading.getVerdictName()
+        score: score,
+        verdictCode: verdictCode,
+        verdictName: verdictName
       }).then(function () {
         callback(null);
       }, function (err) {

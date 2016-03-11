@@ -9,20 +9,19 @@ submissionGrader.consumeGradingData = function (limit, callback) {
   async.waterfall([
     function (callback) {
       gradingService.getUnevaluatedGradingData(limit, function (err, gradings) {
-        if (err) {
-          console.log("error fetching grading data from db: " + err);
-        } else {
-          callback(null, gradings);
-        }
+        callback(err, gradings);
       });
     }, function (gradings, callback) {
       async.each(gradings, function (grading, callback) {
-        submissionService.updateSubmissionGrading(grading, function (err) {
+        submissionService.updateSubmissionGrading(grading.getSubmissionId(), grading.getScore(), grading.getVerdictCode(), grading.getVerdictName(),function (err) {
           if (err) {
-            console.log(err);
+            console.error(err);
             callback(null);
           } else {
             gradingService.markGradingAsEvaluated(grading.getId(), function (err) {
+              if (err) {
+                console.error(err);
+              }
               callback(null);
             });
           }
