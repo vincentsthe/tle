@@ -10,15 +10,15 @@ var acceptedSubmissionEvaluator = {};
 
 var codeAccepted = "AC";
 
-var getUserJidToAcceptedSubmissionCountMap = function (gradings) {
+var getUserIdToAcceptedSubmissionCountMap = function (gradings) {
   var map = {};
   gradings.forEach(function (grading) {
     if (grading.getVerdictCode() == codeAccepted) {
-      var userJid = grading.getUserJid();
-      if (map.hasOwnProperty(userJid)) {
-        map[userJid] = map[userJid] + 1;
+      var userId = grading.getUserId();
+      if (map.hasOwnProperty(userId)) {
+        map[userId] = map[userId] + 1;
       } else {
-        map[userJid] = 1;
+        map[userId] = 1;
       }
     }
   });
@@ -26,15 +26,15 @@ var getUserJidToAcceptedSubmissionCountMap = function (gradings) {
   return map;
 };
 
-var getProblemJidToAcceptedSubmissionCountMap = function (gradings) {
+var getProblemIdToAcceptedSubmissionCountMap = function (gradings) {
   var map = {};
   gradings.forEach(function (grading) {
     if (grading.getVerdictCode() == codeAccepted) {
-      var problemJid = grading.getProblemJid();
-      if (map.hasOwnProperty(problemJid)) {
-        map[problemJid] = map[problemJid] + 1;
+      var problemId = grading.getProblemId();
+      if (map.hasOwnProperty(problemId)) {
+        map[problemId] = map[problemId] + 1;
       } else {
-        map[problemJid] = 1;
+        map[problemId] = 1;
       }
     }
   });
@@ -53,26 +53,26 @@ acceptedSubmissionEvaluator.evaluateAcceptedSubmission = function (limit, callba
         callback(err, gradings);
       });
     }, function (gradings, callback) {
-      var userAcceptedSubmissionMap = getUserJidToAcceptedSubmissionCountMap(gradings);
-      var userJids = _.map(userAcceptedSubmissionMap, function (value, key) {
+      var userAcceptedSubmissionMap = getUserIdToAcceptedSubmissionCountMap(gradings);
+      var userIds = _.map(userAcceptedSubmissionMap, function (value, key) {
         return key;
       });
 
-      async.each(userJids, function (userJid, callback) {
-        userService.incrementAcceptedSubmissionCount(userJid, userAcceptedSubmissionMap[userJid], function (err) {
+      async.each(userIds, function (userId, callback) {
+        userService.incrementAcceptedSubmissionCount(userId, userAcceptedSubmissionMap[userId], function (err) {
           callback(err);
         });
       }, function (err) {
         callback(err, gradings);
       });
     }, function (gradings, callback) {
-      var problemAcceptedSubmissionMap = getProblemJidToAcceptedSubmissionCountMap(gradings);
-      var problemJids = _.map(problemAcceptedSubmissionMap, function (value, key) {
+      var problemAcceptedSubmissionMap = getProblemIdToAcceptedSubmissionCountMap(gradings);
+      var problemIds = _.map(problemAcceptedSubmissionMap, function (value, key) {
         return key;
       });
 
-      async.each(problemJids, function (problemJid, callback) {
-        problemService.incrementAcceptedSubmissionCount(problemJid, problemAcceptedSubmissionMap[problemJid], function (err) {
+      async.each(problemIds, function (problemId, callback) {
+        problemService.incrementAcceptedSubmissionCount(problemId, problemAcceptedSubmissionMap[problemId], function (err) {
           callback(err);
         });
       }, function (err) {

@@ -1,8 +1,8 @@
 var sequelize = require('sequelize');
 
-var sequelzieConnection = require('./sequelizeConnection');
+var sequelizeConnection = require('../../core/sequelizeConnection');
 
-var ProblemModel = sequelzieConnection.define('problem', {
+var ProblemModel = sequelizeConnection.define('problem', {
   id: {
     type: sequelize.INTEGER,
     primaryKey: true

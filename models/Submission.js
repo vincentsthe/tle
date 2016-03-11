@@ -4,11 +4,12 @@ var Submission = function () {
   this.verdictCode = null;
   this.verdictName = null;
   this.score = null;
-  this.userJid = "";
+  this.userId = "";
   this.username = "";
+  this.name = "";
   this.submitTime = null;
   this.language = "";
-  this.problemJid = "";
+  this.problemId = "";
   this.problemSlug = "";
 };
 
@@ -37,13 +38,18 @@ Submission.prototype.setScore = function (score) {
   return this;
 };
 
-Submission.prototype.setUserJid = function (userJid) {
-  this.userJid = userJid;
+Submission.prototype.setUserId = function (userId) {
+  this.userId = userId;
   return this;
 };
 
 Submission.prototype.setUsername = function (username) {
   this.username = username;
+  return this;
+};
+
+Submission.prototype.setName = function (name) {
+  this.name = name;
   return this;
 };
 
@@ -57,8 +63,8 @@ Submission.prototype.setLanguage = function (language) {
   return this;
 };
 
-Submission.prototype.setProblemJid = function (problemJid) {
-  this.problemJid = problemJid;
+Submission.prototype.setProblemId = function (problemId) {
+  this.problemId = problemId;
   return this;
 };
 
@@ -87,12 +93,16 @@ Submission.prototype.getScore = function () {
   return this.score;
 };
 
-Submission.prototype.getUserJid = function () {
-  return this.userJid;
+Submission.prototype.getUserId = function () {
+  return this.userId;
 };
 
 Submission.prototype.getUsername = function () {
   return this.username;
+};
+
+Submission.prototype.getName = function () {
+  return this.name;
 };
 
 Submission.prototype.getSubmitTime = function () {
@@ -103,8 +113,8 @@ Submission.prototype.getLanguage = function () {
   return this.language;
 };
 
-Submission.prototype.getProblemJid = function () {
-  return this.problemJid;
+Submission.prototype.getProblemId = function () {
+  return this.problemId;
 };
 
 Submission.prototype.getProblemSlug = function () {

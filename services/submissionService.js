@@ -1,7 +1,9 @@
 var _ = require('underscore');
 
+var ProblemModel = require('../models/db/index').ProblemModel;
 var Submission = require('../models/Submission');
-var SubmissionModel = require('../models/db/SubmissionModel');
+var SubmissionModel = require('../models/db/index').SubmissionModel;
+var UserModel = require('../models/db/index').UserModel;
 
 var submissionService = {};
 
@@ -88,11 +90,28 @@ submissionService.getSubmissionByLastId = function (lastId, limit, callback) {
         $gt: lastId
       }
     },
-    limit: limit
+    limit: limit,
+    include: [
+      {model: UserModel, as: 'user'},
+      {model: ProblemModel, as: 'problem'}
+    ]
   }).then(function (submissionRecords) {
     var submissions = [];
     submissionRecords.forEach(function (submissionRecord) {
-      var submission = constructSubmissionFromModel(submissionRecord);
+      var submission = new Submission();
+      submission.setId(submissionRecord.id)
+        .setSubmissionJid(submissionRecord.submissionJid)
+        .setVerdictCode(submissionRecord.verdictCode)
+        .setVerdictName(submissionRecord.verdictName)
+        .setScore(submissionRecord.score)
+        .setUserId(submissionRecord.userId)
+        .setUsername(submissionRecord.user.username)
+        .setName(submissionRecord.user.name)
+        .setSubmitTime(submissionRecord.submitTime)
+        .setLanguage(submissionRecord.language)
+        .setProblemId(submissionRecord.problemId)
+        .setProblemSlug(submissionRecord.problem.slug);
+
       submissions.push(submission);
     });
 

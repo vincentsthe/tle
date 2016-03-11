@@ -1,4 +1,4 @@
-var LastIdModel = require('../models/db/LastIdModel');
+var LastIdModel = require('../models/db/index').LastIdModel;
 
 var lastIdService = {};
 

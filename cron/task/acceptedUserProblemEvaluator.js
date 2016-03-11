@@ -12,13 +12,13 @@ var acceptedUserProblemEvaluator = {};
 
 var VERDICT_CODE_ACCEPTED = "AC";
 
-var getDistictAcceptedSubmission = function (gradings) {
+var getDistinctAcceptedSubmission = function (gradings) {
   var userProblemSet = {};
   var distinctAcceptedSubmission = [];
 
   gradings.forEach(function (grading) {
     if (grading.getVerdictCode() == VERDICT_CODE_ACCEPTED) {
-      var hash = grading.getUserJid() + "-" + grading.getProblemJid();
+      var hash = grading.getUserId() + "-" + grading.getProblemId();
       if (!userProblemSet.hasOwnProperty(hash)) {
         userProblemSet[hash] = 1;
         distinctAcceptedSubmission.push(grading);
@@ -48,11 +48,11 @@ acceptedUserProblemEvaluator.evaluateAcceptedUserProblem = function (limit, call
         callback(err, gradings);
       });
     }, function (gradings, callback) {
-      var distinctAcceptedSubmission = getDistictAcceptedSubmission(gradings);
+      var distinctAcceptedSubmission = getDistinctAcceptedSubmission(gradings);
       var newDistinctAcceptedSubmission = [];
 
       async.each(distinctAcceptedSubmission, function (submission, callback) {
-        userService.isUserAcceptedInProblem(submission.getUserJid(), submission.getProblemJid(), function (err, exist) {
+        userService.isUserAcceptedInProblem(submission.getUserId(), submission.getProblemId(), function (err, exist) {
           if (err) {
             callback(err);
           } else {
@@ -67,59 +67,59 @@ acceptedUserProblemEvaluator.evaluateAcceptedUserProblem = function (limit, call
       });
     }, function (newDistinctAcceptedSubmission, callback) {
       async.each(newDistinctAcceptedSubmission, function (submission, callback) {
-        userService.markUserAcceptedInProblem(submission.getUserJid(), submission.getProblemJid(), function (err) {
+        userService.markUserAcceptedInProblem(submission.getUserId(), submission.getProblemId(), function (err) {
           callback(err);
         });
       }, function (err) {
         callback(err, newDistinctAcceptedSubmission);
       });
     }, function (newSubmission, callback) {
-      var userJidToCountMap = {};
+      var userIdToCountMap = {};
       newSubmission.forEach(function (submission) {
-        if (userJidToCountMap.hasOwnProperty(submission.getUserJid())) {
-          userJidToCountMap[submission.getUserJid()] = userJidToCountMap[submission.getUserJid()] + 1;
+        if (userIdToCountMap.hasOwnProperty(submission.getUserId())) {
+          userIdToCountMap[submission.getUserId()] = userIdToCountMap[submission.getUserId()] + 1;
         } else {
-          userJidToCountMap[submission.getUserJid()] = 1;
+          userIdToCountMap[submission.getUserId()] = 1;
         }
       });
-      var userJids = _.map(userJidToCountMap, function (value, key) {
+      var userIds = _.map(userIdToCountMap, function (value, key) {
         return key;
       });
 
-      async.each(userJids, function (userJid, callback) {
-        userService.incrementAcceptedProblemCount(userJid, userJidToCountMap[userJid], function (err) {
+      async.each(userIds, function (userId, callback) {
+        userService.incrementAcceptedProblemCount(userId, userIdToCountMap[userId], function (err) {
           if (err) {
             callback(err);
           } else {
-            userRankService.incrementAcceptedProblem(userJid, userJidToCountMap[userJid], function (err) {
+            //userRankService.incrementAcceptedProblem(userId, userIdToCountMap[userId], function (err) {
               callback(err);
-            });
+            //});
           }
         });
       }, function (err) {
         callback(err, newSubmission);
       });
     }, function (newSubmission, callback) {
-      var problemJidToCountMap = {};
+      var problemIdToCountMap = {};
       newSubmission.forEach(function (submission) {
-        if (problemJidToCountMap.hasOwnProperty(submission.getProblemJid())) {
-          problemJidToCountMap[submission.getProblemJid()] = problemJidToCountMap[submission.getProblemJid()] + 1;
+        if (problemIdToCountMap.hasOwnProperty(submission.getProblemId())) {
+          problemIdToCountMap[submission.getProblemId()] = problemIdToCountMap[submission.getProblemId()] + 1;
         } else {
-          problemJidToCountMap[submission.getProblemJid()] = 1;
+          problemIdToCountMap[submission.getProblemId()] = 1;
         }
       });
-      var problemJids = _.map(problemJidToCountMap, function (value, key) {
+      var problemIds = _.map(problemIdToCountMap, function (value, key) {
         return key;
       });
 
-      async.each(problemJids, function (problemJid, callback) {
-        problemService.incrementAcceptedUserCount(problemJid, problemJidToCountMap[problemJid], function (err) {
+      async.each(problemIds, function (problemId, callback) {
+        problemService.incrementAcceptedUserCount(problemId, problemIdToCountMap[problemId], function (err) {
           if (err) {
             callback(err);
           } else {
-            problemRankService.incrementAcceptedUser(problemJid, problemJidToCountMap[problemJid], function (err) {
+            //problemRankService.incrementAcceptedUser(problemId, problemIdToCountMap[problemId], function (err) {
               callback(err);
-            });
+            //});
           }
         });
       }, function (err) {

@@ -1,6 +1,6 @@
 var sequelize = require('sequelize');
 
-var sequelizeConnection = require('./sequelizeConnection');
+var sequelizeConnection = require('../../core/sequelizeConnection');
 
 var UserAcceptedSubmissionModel = sequelizeConnection.define('user_accepted_submission', {
   problemId: {

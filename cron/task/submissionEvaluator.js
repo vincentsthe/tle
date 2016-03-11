@@ -11,10 +11,10 @@ var submissionEvaluator = {};
 var getUserSubmissionCountMap = function (submissions) {
   var submissionCountMap = {};
   submissions.forEach(function (submission) {
-    if (submissionCountMap.hasOwnProperty(submission.getUserJid())) {
-      submissionCountMap[submission.getUserJid()] = submissionCountMap[submission.getUserJid()] + 1;
+    if (submissionCountMap.hasOwnProperty(submission.getUserId())) {
+      submissionCountMap[submission.getUserId()] = submissionCountMap[submission.getUserId()] + 1;
     } else {
-      submissionCountMap[submission.getUserJid()] = 1;
+      submissionCountMap[submission.getUserId()] = 1;
     }
   });
 
@@ -24,10 +24,10 @@ var getUserSubmissionCountMap = function (submissions) {
 var getProblemSubmissionCountMap = function (submissions) {
   var problemCountMap = {};
   submissions.forEach(function (submission) {
-    if (problemCountMap.hasOwnProperty(submission.getProblemJid())) {
-      problemCountMap[submission.getProblemJid()] = problemCountMap[submission.getProblemJid()] + 1;
+    if (problemCountMap.hasOwnProperty(submission.getProblemId())) {
+      problemCountMap[submission.getProblemId()] = problemCountMap[submission.getProblemId()] + 1;
     } else {
-      problemCountMap[submission.getProblemJid()] = 1;
+      problemCountMap[submission.getProblemId()] = 1;
     }
   });
 
@@ -46,12 +46,12 @@ submissionEvaluator.evaluateSubmission = function (limit, callback) {
       });
     }, function (submissions, callback) {
       var userSubmissionCountMap = getUserSubmissionCountMap(submissions);
-      var userJids = _.map(userSubmissionCountMap, function (value, key) {
+      var userIds = _.map(userSubmissionCountMap, function (value, key) {
         return key;
       });
 
-      async.each(userJids, function (userJid, callback) {
-        userService.incrementSubmissionCount(userJid, userSubmissionCountMap[userJid], function (err) {
+      async.each(userIds, function (userId, callback) {
+        userService.incrementSubmissionCount(userId, userSubmissionCountMap[userId], function (err) {
           callback(err);
         });
       }, function (err) {
@@ -59,12 +59,12 @@ submissionEvaluator.evaluateSubmission = function (limit, callback) {
       });
     }, function (submissions, callback) {
       var problemSubmissionCountMap = getProblemSubmissionCountMap(submissions);
-      var problemJids = _.map(problemSubmissionCountMap, function (value, key) {
+      var problemIds = _.map(problemSubmissionCountMap, function (value, key) {
         return key;
       });
 
-      async.each(problemJids, function (problemJid, callback) {
-        problemService.incrementSubmissionCount(problemJid, problemSubmissionCountMap[problemJid], function (err) {
+      async.each(problemIds, function (problemId, callback) {
+        problemService.incrementSubmissionCount(problemId, problemSubmissionCountMap[problemId], function (err) {
           callback(err);
         });
       }, function (err) {

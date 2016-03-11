@@ -1,7 +1,7 @@
 var _ = require('underscore');
 
 var Problem = require('../models/Problem');
-var ProblemModel = require('../models/db/ProblemModel');
+var ProblemModel = require('../models/db/index').ProblemModel;
 
 var problemService = {};
 
@@ -102,10 +102,10 @@ problemService.existByJid = function (problemJid, callback) {
   });
 };
 
-problemService.incrementSubmissionCount = function (problemJid, count, callback) {
+problemService.incrementSubmissionCount = function (problemId, count, callback) {
   ProblemModel.findOne({
     where: {
-      problemJid: problemJid
+      id: problemId
     }
   }).then(function (problem) {
     if (problem) {
@@ -124,10 +124,10 @@ problemService.incrementSubmissionCount = function (problemJid, count, callback)
   });
 };
 
-problemService.incrementAcceptedSubmissionCount = function (problemJid, count, callback) {
+problemService.incrementAcceptedSubmissionCount = function (problemId, count, callback) {
   ProblemModel.findOne({
     where: {
-      problemJid: problemJid
+      id: problemId
     }
   }).then(function (problem) {
     if (problem) {
@@ -146,10 +146,10 @@ problemService.incrementAcceptedSubmissionCount = function (problemJid, count, c
   });
 };
 
-problemService.incrementAcceptedUserCount = function (problemJid, count, callback) {
+problemService.incrementAcceptedUserCount = function (problemId, count, callback) {
   ProblemModel.findOne({
     where: {
-      problemJid: problemJid
+      id: problemId
     }
   }).then(function (problem) {
     if (problem) {

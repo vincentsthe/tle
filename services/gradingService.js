@@ -1,7 +1,7 @@
 var _ = require('underscore');
 
 var Grading = require('../models/Grading');
-var GradingModel = require('../models/db/GradingModel');
+var GradingModel = require('../models/db/index').GradingModel;
 
 var gradingService = {};
 

@@ -1,6 +1,6 @@
 var sequelize = require('sequelize');
 
-var sequelizeConnection = require('./sequelizeConnection');
+var sequelizeConnection = require('../../core/sequelizeConnection');
 
 var LastIdModel = sequelizeConnection.define('last_id', {
   id: {

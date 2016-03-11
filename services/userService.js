@@ -1,8 +1,8 @@
 var _ = require('underscore');
 
 var User = require('../models/User');
-var UserModel = require('../models/db/UserModel');
-var UserAcceptedSubmissionModel = require('../models/db/UserAcceptedSubmissionModel');
+var UserModel = require('../models/db/index').UserModel;
+var UserAcceptedSubmissionModel = require('../models/db/index').UserAcceptedSubmissionModel;
 
 var userService = {};
 
@@ -121,10 +121,10 @@ userService.changeName = function (userJid, name, callback) {
   });
 };
 
-userService.incrementSubmissionCount = function (userJid, count, callback) {
+userService.incrementSubmissionCount = function (userId, count, callback) {
   UserModel.findOne({
     where: {
-      userJid: userJid
+      id: userId
     }
   }).then(function (user) {
     if (user) {
@@ -143,10 +143,10 @@ userService.incrementSubmissionCount = function (userJid, count, callback) {
   });
 };
 
-userService.incrementAcceptedSubmissionCount = function (userJid, count, callback) {
+userService.incrementAcceptedSubmissionCount = function (userId, count, callback) {
   UserModel.findOne({
     where: {
-      userJid: userJid
+      id: userId
     }
   }).then(function (user) {
     if (user) {
@@ -165,10 +165,10 @@ userService.incrementAcceptedSubmissionCount = function (userJid, count, callbac
   });
 };
 
-userService.incrementAcceptedProblemCount = function (userJid, count, callback) {
+userService.incrementAcceptedProblemCount = function (userId, count, callback) {
   UserModel.findOne({
     where: {
-      userJid: userJid
+      id: userId
     }
   }).then(function (user) {
     if (user) {
@@ -187,11 +187,11 @@ userService.incrementAcceptedProblemCount = function (userJid, count, callback) 
   });
 };
 
-userService.isUserAcceptedInProblem = function (userJid, problemJid, callback) {
+userService.isUserAcceptedInProblem = function (userId, problemId, callback) {
   UserAcceptedSubmissionModel.findOne({
     where: {
-      userJid: userJid,
-      problemJid: problemJid
+      userId: userId,
+      problemId: problemId
     }
   }).then(function (record) {
     if (record) {
@@ -204,10 +204,10 @@ userService.isUserAcceptedInProblem = function (userJid, problemJid, callback) {
   });
 };
 
-userService.markUserAcceptedInProblem = function (userJid, problemJid, callback) {
+userService.markUserAcceptedInProblem = function (userId, problemId, callback) {
   UserAcceptedSubmissionModel.create({
-    userJid: userJid,
-    problemJid: problemJid
+    userId: userId,
+    problemId: problemId
   }).then(function (record) {
     callback(null);
   }, function (err) {

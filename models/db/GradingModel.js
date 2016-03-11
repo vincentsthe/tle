@@ -1,6 +1,6 @@
 var sequelize = require('sequelize');
 
-var sequelizeConnection = require('./sequelizeConnection');
+var sequelizeConnection = require('../../core/sequelizeConnection');
 
 var GradingModel = sequelizeConnection.define('grading', {
   id: {
