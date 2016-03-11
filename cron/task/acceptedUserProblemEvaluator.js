@@ -91,9 +91,9 @@ acceptedUserProblemEvaluator.evaluateAcceptedUserProblem = function (limit, call
           if (err) {
             callback(err);
           } else {
-            //userRankService.incrementAcceptedProblem(userId, userIdToCountMap[userId], function (err) {
+            userRankService.incrementAcceptedProblem(userId, userIdToCountMap[userId], function (err) {
               callback(err);
-            //});
+            });
           }
         });
       }, function (err) {
@@ -117,9 +117,9 @@ acceptedUserProblemEvaluator.evaluateAcceptedUserProblem = function (limit, call
           if (err) {
             callback(err);
           } else {
-            //problemRankService.incrementAcceptedUser(problemId, problemIdToCountMap[problemId], function (err) {
+            problemRankService.incrementAcceptedUser(problemId, problemIdToCountMap[problemId], function (err) {
               callback(err);
-            //});
+            });
           }
         });
       }, function (err) {

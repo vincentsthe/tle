@@ -24,14 +24,14 @@ var constructSubmissionFromModel = function (submissionModel) {
   return submission;
 };
 
-submissionService.getSubmissionJidToSubmissionMap = function (submissionJids, callback) {
-  submissionService.getSubmissionByJids(submissionJids, function (err, submissions) {
+submissionService.getSubmissionIdToSubmissionMap = function (submissionIds, callback) {
+  submissionService.getSubmissionByIds(submissionIds, function (err, submissions) {
     if (err) {
       callback(err);
     } else {
       var map = {};
       submissions.forEach(function (submission) {
-        map[submission.getSubmissionJid()] = submission;
+        map[submission.getId()] = submission;
       });
 
       callback(err, map);
@@ -39,11 +39,11 @@ submissionService.getSubmissionJidToSubmissionMap = function (submissionJids, ca
   });
 };
 
-submissionService.getSubmissionByJids = function (submissionJids, callback) {
+submissionService.getSubmissionByIds = function (submissionIds, callback) {
   SubmissionModel.findAll({
     where: {
-      submissionJid: {
-        $in: submissionJids
+      id: {
+        $in: submissionIds
       }
     }
   }).then(function (submissionModels) {

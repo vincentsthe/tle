@@ -35,7 +35,7 @@ userRankService.init = function (callback) {
             callback(err);
           } else {
             async.each(users, function (user, callback) {
-              userRankService.insertUserRecord(user.getUserJid(), user.getAcceptedProblem(), function (err) {
+              userRankService.insertUserRecord(user.getId(), user.getAcceptedProblem(), function (err) {
                 callback(err);
               });
             }, function (err) {
@@ -50,8 +50,8 @@ userRankService.init = function (callback) {
   });
 };
 
-userRankService.getRank = function (userJid, callback) {
-  var args = [USER_RANK_REDIS_SET, userJid];
+userRankService.getRank = function (userId, callback) {
+  var args = [USER_RANK_REDIS_SET, userId];
   redisClient.zrank(args, function (err, rank) {
     if (rank) {
       callback(err, rank + 1);
@@ -78,15 +78,15 @@ userRankService.getUsersByRankRange = function (initialRank, limit, callback) {
   });
 };
 
-userRankService.incrementAcceptedProblem = function (userJid, count, callback) {
-  var args = [USER_RANK_REDIS_SET, -count, userJid];
+userRankService.incrementAcceptedProblem = function (userId, count, callback) {
+  var args = [USER_RANK_REDIS_SET, -count, userId];
   redisClient.zincrby(args, function (err) {
     callback(err);
   });
 };
 
-userRankService.insertUserRecord = function (userJid, count, callback) {
-  var args = [USER_RANK_REDIS_SET, -count, userJid];
+userRankService.insertUserRecord = function (userId, count, callback) {
+  var args = [USER_RANK_REDIS_SET, -count, userId];
   redisClient.zadd(args, function (err) {
     callback(err);
   });

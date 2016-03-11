@@ -24,8 +24,11 @@ var saveProblem = function (problemJid, problemUrl, callback) {
       problemService.insertProblem(tlxProblemModel.getId(), problemJid, tlxProblemModel.getSlug(), problemUrl, function (err) {
         if (err) {
           console.error(err);
+        } else {
+          problemRankService.insertProblemRecord(tlxProblemModel.getId(), 0, function (err) {
+            callback(null);
+          });
         }
-        callback(null);
       });
     }
   ], function (err) {

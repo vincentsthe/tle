@@ -13,10 +13,10 @@ recentSubmissionService.init = function (callback) {
     if (err) {
       callback(err);
     } else {
-      var submissionJids = _.map(submissions, function (submission) {
-        return submission.getSubmissionJid();
+      var submissionIds = _.map(submissions, function (submission) {
+        return submission.getSubmissionId();
       });
-      recentSubmissionService.insertNewSubmissionNewestFirstIndex(submissionJids, function (err) {
+      recentSubmissionService.insertNewSubmissionNewestFirstIndex(submissionIds, function (err) {
         callback(err);
       })
     }
@@ -25,16 +25,16 @@ recentSubmissionService.init = function (callback) {
 
 recentSubmissionService.getLatestSubmission = function (limit, callback) {
   var args = [RECENT_SUBMISSION_REDIS_LIST, 0, limit - 1];
-  redisClient.lrange(args, function (err, submissionJids) {
+  redisClient.lrange(args, function (err, submissionIds) {
     if (err) {
       callback(err);
     } else {
-      submissionService.getSubmissionJidToSubmissionMap(submissionJids, function (err, map) {
+      submissionService.getSubmissionIdToSubmissionMap(submissionIds, function (err, map) {
         if (err) {
           callback(err);
         } else {
-          var submissions = _.map(submissionJids, function (submissionJid) {
-            return map[submissionJid];
+          var submissions = _.map(submissionIds, function (submissionId) {
+            return map[submissionId];
           });
 
           callback(null, submissions);
@@ -44,14 +44,14 @@ recentSubmissionService.getLatestSubmission = function (limit, callback) {
   });
 };
 
-recentSubmissionService.insertNewSubmissionNewestFirstIndex = function (submissionJids, callback) {
-  recentSubmissionService.insertNewSubmissionOldestFirstIndex(submissionJids.reverse(), callback);
+recentSubmissionService.insertNewSubmissionNewestFirstIndex = function (submissionIds, callback) {
+  recentSubmissionService.insertNewSubmissionOldestFirstIndex(submissionIds.reverse(), callback);
 };
 
-recentSubmissionService.insertNewSubmissionOldestFirstIndex = function (submissionJids, callback) {
+recentSubmissionService.insertNewSubmissionOldestFirstIndex = function (submissionIds, callback) {
   var args = [RECENT_SUBMISSION_REDIS_LIST];
-  submissionJids.forEach(function (submissionJid) {
-    args.push(submissionJid);
+  submissionIds.forEach(function (submissionId) {
+    args.push(submissionId);
   });
 
   redisClient.lpush(args, function (err, reply) {

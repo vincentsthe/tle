@@ -27,7 +27,7 @@ userMigrator.migrate = function (limit, callback) {
       });
     }, function (tlxUserModels, callback) {
       async.each(tlxUserModels, function (tlxUserModel, callback) {
-        tleUserService.insertUserRecord(tlxUserModel.getJid(), 0, function (err) {
+        tleUserService.insertUserRecord(tlxUserModel.getId(), 0, function (err) {
           callback(err);
         });
       }, function (err) {

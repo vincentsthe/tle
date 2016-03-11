@@ -1,7 +1,8 @@
 var _ = require('underscore');
 var async = require('async');
 
-var submissionService = require('../../services/submissionService')
+var submissionService = require('../../services/submissionService');
+var recentSubmissionService = require('../../tleModuleServices/recentSubmissionService');
 var tlxProblemService = require('../../tlxservices/tlxProblemService');
 var tlxSubmissionService = require('../../tlxservices/tlxSubmissionService');
 var tlxUserService = require('../../tlxservices/tlxUserService');
@@ -46,7 +47,17 @@ submissionMigrator.migrate = function (limit, callback) {
           callback(null);
         }
       }, function (err) {
-        callback(err, tlxSubmissionModels.length);
+        if (err) {
+          callback(err);
+        } else {
+          var submissionIds = _.map(tlxSubmissionModels, function (tlxSubmissionModel) {
+            return tlxSubmissionModel.getId();
+          });
+
+          recentSubmissionService.insertNewSubmissionOldestFirstIndex(submissionIds, function (err) {
+            callback(null, tlxSubmissionModels.length);
+          });
+        }
       });
     }
   ], function (err, submissionCount) {
