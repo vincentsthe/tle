@@ -30,8 +30,6 @@ router.get('/', function(req, res, next) {
       });
     }
   ], function (err) {
-    console.log(userRanks);
-    console.log(problemRanks);
     if(err) {
       console.error(err);
     }
@@ -40,6 +38,24 @@ router.get('/', function(req, res, next) {
       problems: problemRanks,
       submissions: recentSubmissions
     });
+  });
+});
+
+router.get('/tes/submission', function (req, res, next) {
+  recentSubmissionService.getLatestSubmission(10, function (err, submissions) {
+    res.json(submissions);
+  });
+});
+
+router.get('/tes/problem', function (req, res, next) {
+  problemRankService.getProblemsByRankRange(1, 50, function (err, problems) {
+    res.json(problems);
+  });
+});
+
+router.get('/tes/user', function (req, res, next) {
+  userRankService.getUsersByRankRange(1, 50, function (err, users) {
+    res.json(users);
   });
 });
 

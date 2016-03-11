@@ -1,6 +1,7 @@
 var async = require('async');
 
 var gradingService = require('../../services/gradingService');
+var redisClient = require('../../core/redisClient');
 var submissionService = require('../../services/submissionService');
 
 var submissionGrader = {};
@@ -18,6 +19,7 @@ submissionGrader.consumeGradingData = function (limit, callback) {
             console.error(err);
             callback(null);
           } else {
+            redisClient.del(submissionService.REDIS_SUBMISSION_ID_PREFIX + grading.getSubmissionId());
             gradingService.markGradingAsEvaluated(grading.getId(), function (err) {
               if (err) {
                 console.error(err);

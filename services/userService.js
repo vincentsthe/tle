@@ -1,8 +1,13 @@
 var _ = require('underscore');
+var async = require('async');
 
+var redisClient = require('../core/redisClient');
 var User = require('../models/User');
 var UserModel = require('../models/db/index').UserModel;
 var UserAcceptedSubmissionModel = require('../models/db/index').UserAcceptedSubmissionModel;
+
+var REDIS_USER_ID_PREFIX = "user:id:";
+var REDIS_USER_EXPIRATION_TIME = 1800;
 
 var userService = {};
 
@@ -17,6 +22,57 @@ var constructUserFromModel = function (userModel) {
       .setAcceptedProblem(userModel.acceptedProblem);
 
   return user;
+};
+
+var constructUserFromPlainObject = function (object) {
+  var user = new User();
+  user.setId(object.id)
+    .setUserJid(object.userJid)
+    .setUsername(object.username)
+    .setName(object.name)
+    .setAcceptedSubmission(object.acceptedSubmission)
+    .setTotalSubmission(object.totalSubmission)
+    .setAcceptedProblem(object.acceptedProblem);
+
+  return user;
+};
+
+var getUserByIdFromDb = function (id, callback) {
+  UserModel.findOne({
+    where: {
+      id: id
+    }
+  }).then(function (user) {
+    callback(null, constructUserFromModel(user));
+  }, function (err) {
+    callback(err);
+  });
+};
+
+userService.getUserById = function (id, callback) {
+  var redisKey = REDIS_USER_ID_PREFIX + id;
+
+  redisClient.get(redisKey, function (err, user) {
+    if (err) {
+      callback(err);
+    } else if (user) {
+      user = JSON.parse(user);
+      redisClient.expire(redisKey, REDIS_USER_EXPIRATION_TIME);
+      callback(null, constructUserFromPlainObject(user));
+    } else {
+      getUserByIdFromDb(id, function (err, user) {
+        if (err) {
+          callback(err);
+        } else {
+          var userString = JSON.stringify(user);
+          redisClient.set(redisKey, userString);
+          redisClient.expire(redisKey, REDIS_USER_EXPIRATION_TIME);
+
+          callback(null, user);
+        }
+      });
+    }
+  });
 };
 
 userService.getUserIdToUserMap = function (userIds, callback) {
@@ -35,20 +91,14 @@ userService.getUserIdToUserMap = function (userIds, callback) {
 };
 
 userService.getUserByIds = function (userIds, callback) {
-  UserModel.findAll({
-    where: {
-      id: {
-        $in: userIds
-      }
-    }
-  }).then(function (userModels) {
-    var users = _.map(userModels, function (userModel) {
-      return constructUserFromModel(userModel);
+  var users = [];
+  async.each(userIds, function (userId, callback) {
+    userService.getUserById(userId, function (err, user) {
+      users.push(user);
+      callback(err);
     });
-
-    callback(null, users);
   }, function (err) {
-    callback(err);
+    callback(err, users);
   });
 };
 
