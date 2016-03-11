@@ -19,14 +19,14 @@ var constructUserFromModel = function (userModel) {
   return user;
 };
 
-userService.getUserJidToUserMap = function (userJids, callback) {
-  userService.getUserByJids(userJids, function (err, users) {
+userService.getUserIdToUserMap = function (userIds, callback) {
+  userService.getUserByIds(userIds, function (err, users) {
     if (err) {
       callback(err);
     } else {
       var map = {};
       users.forEach(function (user) {
-        map[user.getUserJid()] = user;
+        map[user.getId()] = user;
       });
 
       callback(null, map);
@@ -34,11 +34,11 @@ userService.getUserJidToUserMap = function (userJids, callback) {
   });
 };
 
-userService.getUserByJids = function (userJids, callback) {
+userService.getUserByIds = function (userIds, callback) {
   UserModel.findAll({
     where: {
-      userJid: {
-        $in: userJids
+      id: {
+        $in: userIds
       }
     }
   }).then(function (userModels) {

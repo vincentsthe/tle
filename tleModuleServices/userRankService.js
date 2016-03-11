@@ -63,13 +63,13 @@ userRankService.getRank = function (userId, callback) {
 
 userRankService.getUsersByRankRange = function (initialRank, limit, callback) {
   var args = [USER_RANK_REDIS_SET, initialRank - 1, initialRank + limit - 1];
-  redisClient.zrange(args, function (err, userJids) {
-    userService.getUserJidToUserMap(userJids, function (err, map) {
+  redisClient.zrange(args, function (err, userIds) {
+    userService.getUserIdToUserMap(userIds, function (err, map) {
       if (err) {
         callback(err);
       } else {
-        var users = _.map(userJids, function (userJid) {
-          return map[userJid];
+        var users = _.map(userIds, function (userId) {
+          return map[userId];
         });
 
         callback(null, users);

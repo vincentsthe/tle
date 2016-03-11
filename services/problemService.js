@@ -18,14 +18,14 @@ var constructProblemFromModel = function (problemModel) {
   return problem;
 };
 
-problemService.getProblemJidToProblemMap = function (problemJids, callback) {
-  problemService.getProblemByJids(problemJids, function (err, problems) {
+problemService.getProblemIdToProblemMap = function (problemIds, callback) {
+  problemService.getProblemByIds(problemIds, function (err, problems) {
     if (err) {
       callback(err);
     } else {
       var map = {};
       problems.forEach(function (problem) {
-        map[problem.getProblemJid()] = problem;
+        map[problem.getId()] = problem;
       });
 
       callback(null, map);
@@ -52,11 +52,11 @@ problemService.getProblemByLastId = function (lastId, limit, callback) {
   });
 };
 
-problemService.getProblemByJids = function (problemJids, callback) {
+problemService.getProblemByIds = function (problemIds, callback) {
   ProblemModel.findAll({
     where: {
-      problemJid: {
-        $in: problemJids
+      id: {
+        $in: problemIds
       }
     }
   }).then(function (problemRecords) {

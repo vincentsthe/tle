@@ -52,13 +52,13 @@ problemRankService.init = function (callback) {
 
 problemRankService.getProblemsByRankRange = function (initialRank, limit, callback) {
   var args = [PROBLEM_RANK_REDIS_SET, initialRank - 1, initialRank + limit - 1];
-  redisClient.zrange(args, function (err, problemJids) {
-    problemService.getProblemJidToProblemMap(problemJids, function (err, map) {
+  redisClient.zrange(args, function (err, problemIds) {
+    problemService.getProblemIdToProblemMap(problemIds, function (err, map) {
       if (err) {
         callback(err);
       } else {
-        var problems = _.map(problemJids, function (problemJid) {
-          return map[problemJid];
+        var problems = _.map(problemIds, function (problemId) {
+          return map[problemId];
         });
 
         callback(null, problems);

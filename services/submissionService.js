@@ -7,23 +7,6 @@ var UserModel = require('../models/db/index').UserModel;
 
 var submissionService = {};
 
-var constructSubmissionFromModel = function (submissionModel) {
-  var submission = new Submission();
-  submission.setId(submissionModel.id)
-            .setSubmissionJid(submissionModel.submissionJid)
-            .setVerdictCode(submissionModel.verdictCode)
-            .setVerdictName(submissionModel.verdictName)
-            .setScore(submissionModel.score)
-            .setUserJid(submissionModel.userJid)
-            .setUsername(submissionModel.username)
-            .setLanguage(submissionModel.language)
-            .setSubmitTime(submissionModel.submitTime)
-            .setProblemJid(submissionModel.problemJid)
-            .setProblemSlug(submissionModel.problemSlug);
-
-  return submission;
-};
-
 submissionService.getSubmissionIdToSubmissionMap = function (submissionIds, callback) {
   submissionService.getSubmissionByIds(submissionIds, function (err, submissions) {
     if (err) {
@@ -45,10 +28,28 @@ submissionService.getSubmissionByIds = function (submissionIds, callback) {
       id: {
         $in: submissionIds
       }
-    }
+    },
+    include: [
+      {model: UserModel, as: 'user'},
+      {model: ProblemModel, as: 'problem'}
+    ]
   }).then(function (submissionModels) {
-    var submissions = _.map(submissionModels, function (submissionModel) {
-      return constructSubmissionFromModel(submissionModel);
+    var submissions = _.map(submissionModels, function (submissionRecord) {
+      var submission = new Submission();
+      submission.setId(submissionRecord.id)
+        .setSubmissionJid(submissionRecord.submissionJid)
+        .setVerdictCode(submissionRecord.verdictCode)
+        .setVerdictName(submissionRecord.verdictName)
+        .setScore(submissionRecord.score)
+        .setUserId(submissionRecord.userId)
+        .setUsername(submissionRecord.user.username)
+        .setName(submissionRecord.user.name)
+        .setSubmitTime(submissionRecord.submitTime)
+        .setLanguage(submissionRecord.language)
+        .setProblemId(submissionRecord.problemId)
+        .setProblemSlug(submissionRecord.problem.slug);
+
+      return submission;
     });
     callback(null, submissions);
   }, function (err) {
@@ -59,10 +60,28 @@ submissionService.getSubmissionByIds = function (submissionIds, callback) {
 submissionService.getLatestSubmission = function (limit, callback) {
   SubmissionModel.findAll({
     limit: limit,
-    order: 'id DESC'
+    order: 'id DESC',
+    include: [
+      {model: UserModel, as: 'user'},
+      {model: ProblemModel, as: 'problem'}
+    ]
   }).then(function (submissionRecords) {
     var submissions = _.map(submissionRecords, function (submissionRecord) {
-      return constructSubmissionFromModel(submissionRecord);
+      var submission = new Submission();
+      submission.setId(submissionRecord.id)
+        .setSubmissionJid(submissionRecord.submissionJid)
+        .setVerdictCode(submissionRecord.verdictCode)
+        .setVerdictName(submissionRecord.verdictName)
+        .setScore(submissionRecord.score)
+        .setUserId(submissionRecord.userId)
+        .setUsername(submissionRecord.user.username)
+        .setName(submissionRecord.user.name)
+        .setSubmitTime(submissionRecord.submitTime)
+        .setLanguage(submissionRecord.language)
+        .setProblemId(submissionRecord.problemId)
+        .setProblemSlug(submissionRecord.problem.slug);
+
+      return submission;
     });
 
     callback(null, submissions);

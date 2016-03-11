@@ -14,7 +14,7 @@ recentSubmissionService.init = function (callback) {
       callback(err);
     } else {
       var submissionIds = _.map(submissions, function (submission) {
-        return submission.getSubmissionId();
+        return submission.getId();
       });
       recentSubmissionService.insertNewSubmissionNewestFirstIndex(submissionIds, function (err) {
         callback(err);

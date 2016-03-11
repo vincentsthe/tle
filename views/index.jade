@@ -23,7 +23,6 @@ html
         tbody
           each submission in submissions
             tr
-              td= submission.jerahmeelSubmissionId
               td= submission.username
               td= submission.problemSlug
               td= submission.verdictName
@@ -45,7 +44,7 @@ html
         tbody
           each problem in problems
             tr
-              td= problem.sandalphonProblemId
+              td= problem.id
               td= problem.slug
               td= problem.acceptedUser
               td= problem.totalSubmission

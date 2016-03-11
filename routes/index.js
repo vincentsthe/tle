@@ -30,6 +30,8 @@ router.get('/', function(req, res, next) {
       });
     }
   ], function (err) {
+    console.log(userRanks);
+    console.log(problemRanks);
     if(err) {
       console.error(err);
     }
