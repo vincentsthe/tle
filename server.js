@@ -11,6 +11,10 @@ var init = require('./init');
 var routes = require('./routes/index');
 var user = require('./routes/user');
 
+var problemApi = require('./routes/api/v0.1/problem');
+var submissionApi = require('./routes/api/v0.1/submission');
+var userApi = require('./routes/api/v0.1/user');
+
 var app = express();
 
 // view engine setup
@@ -26,6 +30,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/user', user);
+
+app.use('/api/v0.1/problem', problemApi);
+app.use('/api/v0.1/submission', submissionApi);
+app.use('/api/v0.1/user', userApi);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -62,7 +62,7 @@ userRankService.getRank = function (userId, callback) {
 };
 
 userRankService.getUsersByRankRange = function (initialRank, limit, callback) {
-  var args = [USER_RANK_REDIS_SET, initialRank - 1, initialRank + limit - 1];
+  var args = [USER_RANK_REDIS_SET, initialRank - 1, initialRank + limit - 2];
   redisClient.zrange(args, function (err, userIds) {
     userService.getUserIdToUserMap(userIds, function (err, map) {
       if (err) {

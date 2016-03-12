@@ -5,6 +5,7 @@ var gradingService = require('../../services/gradingService');
 var lastIdService = require('../../services/lastIdService');
 var problemRankService = require('../../tleModuleServices/problemRankService');
 var problemService = require('../../services/problemService');
+var redisClient = require('../../core/redisClient');
 var userRankService = require('../../tleModuleServices/userRankService');
 var userService = require('../../services/userService');
 
@@ -68,6 +69,7 @@ acceptedUserProblemEvaluator.evaluateAcceptedUserProblem = function (limit, call
     }, function (newDistinctAcceptedSubmission, callback) {
       async.each(newDistinctAcceptedSubmission, function (submission, callback) {
         userService.markUserAcceptedInProblem(submission.getUserId(), submission.getProblemId(), function (err) {
+          redisClient.del(userService.REDIS_USER_SOLVED_PROBLEM_PREFIX + submission.getUserId());
           callback(err);
         });
       }, function (err) {

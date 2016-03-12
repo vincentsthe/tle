@@ -106,6 +106,36 @@ submissionService.getSubmissionIdToSubmissionMap = function (submissionIds, call
   });
 };
 
+submissionService.getSubmission = function (userId, problemId, limit, callback) {
+  var whereCondition = {};
+  if (userId) {
+    whereCondition["userId"] = userId;
+  }
+  if (problemId) {
+    whereCondition["problemId"] = problemId;
+  }
+
+  SubmissionModel.findAll({
+    where: whereCondition,
+    limit: limit,
+    order: 'id DESC'
+  }).then(function (submissionModels) {
+    var submissionIds = _.map(submissionModels, function (submissionModel) {
+      return submissionModel.id;
+    });
+
+    submissionService.getSubmissionIdToSubmissionMap(submissionIds, function (err, submissionMap) {
+      var submissions = _.map(submissionIds, function (submissionId) {
+        return submissionMap[submissionId];
+      });
+
+      callback(err, submissions);
+    });
+  }, function (err) {
+    callback(err);
+  });
+};
+
 submissionService.getSubmissionByIds = function (submissionIds, callback) {
   var submissions = [];
   async.each(submissionIds, function (submissionId, callback) {

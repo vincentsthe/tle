@@ -7,7 +7,9 @@ var UserModel = require('../models/db/index').UserModel;
 var UserAcceptedSubmissionModel = require('../models/db/index').UserAcceptedSubmissionModel;
 
 var REDIS_USER_ID_PREFIX = "user:id:";
+var REDIS_USER_SOLVED_PROBLEM_PREFIX = "user:problem:solved:id:";
 var REDIS_USER_EXPIRATION_TIME = 1800;
+var REDIS_USER_SOLVED_PROBLEM_EXPIRATION_TIME = 7200;
 
 var userService = {};
 
@@ -49,6 +51,22 @@ var getUserByIdFromDb = function (id, callback) {
   });
 };
 
+var getUserSolvedProblemIdsFromDb = function (userId, callback) {
+  UserAcceptedSubmissionModel.findAll({
+    where: {
+      userId: userId
+    }
+  }).then(function (records) {
+    var problemIds = _.map(records, function (record) {
+      return record.problemId;
+    });
+
+    callback(null, problemIds);
+  }, function (err) {
+    callback(err);
+  });
+};
+
 userService.getUserById = function (id, callback) {
   var redisKey = REDIS_USER_ID_PREFIX + id;
 
@@ -72,6 +90,18 @@ userService.getUserById = function (id, callback) {
         }
       });
     }
+  });
+};
+
+userService.getUserByUsername = function (username, callback) {
+  UserModel.findOne({
+    where: {
+      username: username
+    }
+  }).then(function (userModel) {
+    callback(null, userModel);
+  }, function (err) {
+    callback(err);
   });
 };
 
@@ -99,6 +129,32 @@ userService.getUserByIds = function (userIds, callback) {
     });
   }, function (err) {
     callback(err, users);
+  });
+};
+
+userService.getUserSolvedProblemIds = function (userId, callback) {
+  var redisKey = REDIS_USER_SOLVED_PROBLEM_PREFIX + userId;
+
+  redisClient.get(redisKey, function (err, problemIds) {
+    if (err) {
+      callback(err);
+    } else if (problemIds) {
+      problemIds = JSON.parse(problemIds);
+      redisClient.expire(redisKey, REDIS_USER_SOLVED_PROBLEM_EXPIRATION_TIME);
+      callback(null, problemIds);
+    } else {
+      getUserSolvedProblemIdsFromDb(userId, function (err, problemIds) {
+        if (err) {
+          callback(err);
+        } else {
+          var problemIdsString = JSON.stringify(problemIds);
+          redisClient.set(redisKey, problemIdsString);
+          redisClient.expire(redisKey, REDIS_USER_SOLVED_PROBLEM_EXPIRATION_TIME);
+
+          callback(null, problemIds);
+        }
+      });
+    }
   });
 };
 
@@ -266,3 +322,4 @@ userService.markUserAcceptedInProblem = function (userId, problemId, callback) {
 };
 
 module.exports = userService;
+module.exports.REDIS_USER_SOLVED_PROBLEM_PREFIX = REDIS_USER_SOLVED_PROBLEM_PREFIX;
