@@ -32,6 +32,10 @@ var GradingModel = sequelizeConnection.define('grading', {
   },
   evaluated: {
     type: sequelize.BOOLEAN
+  },
+  submissionTime: {
+    type: sequelize.INTEGER,
+    field: 'submission_time'
   }
 });
 

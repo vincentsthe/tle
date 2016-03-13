@@ -2,6 +2,7 @@ var Problem = function () {
   this.id = 0;
   this.problemJid = "";
   this.slug = "";
+  this.createTime = 0;
   this.acceptedUser = 0;
   this.totalSubmission = 0;
   this.acceptedSubmission = 0;
@@ -20,6 +21,11 @@ Problem.prototype.setProblemJid = function (problemJid) {
 
 Problem.prototype.setSlug = function (slug) {
   this.slug = slug;
+  return this;
+};
+
+Problem.prototype.setCreateTime = function (createTime) {
+  this.createTime = createTime;
   return this;
 };
 
@@ -53,6 +59,10 @@ Problem.prototype.getProblemJid = function () {
 
 Problem.prototype.getSlug = function () {
   return this.slug;
+};
+
+Problem.prototype.getCreateTime = function () {
+  return this.createTime;
 };
 
 Problem.prototype.getAcceptedUser = function () {

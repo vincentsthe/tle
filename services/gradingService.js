@@ -14,7 +14,8 @@ var constructGradingFromModel = function (gradingModel) {
         .setVerdictName(gradingModel.verdictName)
         .setEvaluated(gradingModel.evaluated)
         .setUserId(gradingModel.userId)
-        .setProblemId(gradingModel.problemId);
+        .setProblemId(gradingModel.problemId)
+        .setSubmissionTime(gradingModel.submissionTime);
 
   return grading;
 };
@@ -39,7 +40,7 @@ gradingService.getGradingDataByLastId = function (lastId, limit, callback) {
   });
 };
 
-gradingService.insertGrading = function (id, submissionId, score, verdictCode, verdictName, userId, problemId, callback) {
+gradingService.insertGrading = function (id, submissionId, score, verdictCode, verdictName, userId, problemId, submissionTime, callback) {
   GradingModel.create({
     id: id,
     submissionId: submissionId,
@@ -48,7 +49,8 @@ gradingService.insertGrading = function (id, submissionId, score, verdictCode, v
     verdictName: verdictName,
     userId: userId,
     problemId: problemId,
-    evaluated: false
+    evaluated: false,
+    submissionTime: submissionTime
   }).then(function () {
     callback();
   }, function (err) {

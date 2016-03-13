@@ -12,6 +12,9 @@ var UserAcceptedSubmissionModel = sequelizeConnection.define('user_accepted_subm
     type: sequelize.INTEGER,
     field: 'user_id',
     primaryKey: true
+  },
+  time: {
+    type: sequelize.INTEGER
   }
 });
 

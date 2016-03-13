@@ -40,7 +40,8 @@ gradingMigrator.migrate = function (limit, callback) {
         // we use try block here in case of problemJid or userJid is not found in problemMap or userMap
         try {
           gradingService.insertGrading(tlxGradingModel.getId(), tlxGradingModel.getSubmissionId(), tlxGradingModel.getScore(), tlxGradingModel.getVerdictCode(),
-            tlxGradingModel.getVerdictName(), userMap[tlxGradingModel.getUserJid()].getId(), problemMap[tlxGradingModel.getProblemJid()].getId(), function (err) {
+            tlxGradingModel.getVerdictName(), userMap[tlxGradingModel.getUserJid()].getId(), problemMap[tlxGradingModel.getProblemJid()].getId(),
+            Math.round(tlxGradingModel.getSubmissionTime() / 1000), function (err) {
               callback(err);
             });
         } catch (ex) {

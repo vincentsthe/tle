@@ -68,7 +68,7 @@ acceptedUserProblemEvaluator.evaluateAcceptedUserProblem = function (limit, call
       });
     }, function (newDistinctAcceptedSubmission, callback) {
       async.each(newDistinctAcceptedSubmission, function (submission, callback) {
-        userService.markUserAcceptedInProblem(submission.getUserId(), submission.getProblemId(), function (err) {
+        userService.markUserAcceptedInProblem(submission.getUserId(), submission.getProblemId(), submission.getSubmissionTime(), function (err) {
           redisClient.del(userService.REDIS_USER_SOLVED_PROBLEM_PREFIX + submission.getUserId());
           callback(err);
         });

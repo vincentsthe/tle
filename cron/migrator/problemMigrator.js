@@ -21,7 +21,8 @@ var saveProblem = function (problemJid, problemUrl, callback) {
         }
       });
     }, function (tlxProblemModel, callback) {
-      problemService.insertProblem(tlxProblemModel.getId(), problemJid, tlxProblemModel.getSlug(), problemUrl, function (err) {
+      problemService.insertProblem(tlxProblemModel.getId(), problemJid, tlxProblemModel.getSlug(), Math.round(tlxProblemModel.getCreateTime() / 1000),
+        problemUrl, function (err) {
         if (err) {
           console.error(err);
         } else {

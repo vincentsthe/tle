@@ -15,6 +15,7 @@ var constructProblemFromModel = function (problemModel) {
   problem.setId(problemModel.id)
         .setProblemJid(problemModel.problemJid)
         .setSlug(problemModel.slug)
+        .setCreateTime(problemModel.createTime)
         .setAcceptedUser(problemModel.acceptedUser)
         .setTotalSubmission(problemModel.totalSubmission)
         .setAcceptedSubmission(problemModel.acceptedSubmission)
@@ -121,11 +122,12 @@ problemService.getProblemByIds = function (problemIds, callback) {
   });
 };
 
-problemService.insertProblem = function (id, problemJid, slug, url, callback) {
+problemService.insertProblem = function (id, problemJid, slug, createTime, url, callback) {
   ProblemModel.create({
     id: id,
     problemJid: problemJid,
     slug: slug,
+    createTime: createTime,
     url: url,
     acceptedUser: 0,
     totalSubmission: 0,

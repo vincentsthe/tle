@@ -3,8 +3,8 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 10, 2016 at 10:09 PM
--- Server version: 5.6.25
+-- Generation Time: Mar 13, 2016 at 07:02 PM
+-- Server version: 5.6.25-log
 -- PHP Version: 5.5.31
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS `grading` (
   `score` int(11) DEFAULT NULL,
   `verdict_code` varchar(64) DEFAULT NULL,
   `verdict_name` varchar(64) DEFAULT NULL,
-  `evaluated` tinyint(4) DEFAULT '0'
+  `evaluated` tinyint(4) DEFAULT '0',
+  `submission_time` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS `problem` (
   `id` int(11) NOT NULL,
   `problem_jid` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
+  `create_time` int(11) NOT NULL,
   `accepted_user` int(11) NOT NULL,
   `total_submission` int(11) NOT NULL,
   `accepted_submission` int(11) NOT NULL,
@@ -107,7 +109,8 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 CREATE TABLE IF NOT EXISTS `user_accepted_submission` (
   `problem_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL
+  `user_id` int(11) NOT NULL,
+  `time` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------

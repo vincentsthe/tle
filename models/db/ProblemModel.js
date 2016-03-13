@@ -14,6 +14,10 @@ var ProblemModel = sequelizeConnection.define('problem', {
   slug: {
     type: sequelize.STRING
   },
+  createTime: {
+    type: sequelize.INTEGER,
+    field: 'create_time'
+  },
   acceptedUser: {
     type: sequelize.INTEGER,
     field: 'accepted_user'

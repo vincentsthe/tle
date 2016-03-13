@@ -6,6 +6,7 @@ var TlxGradingModel = function () {
   this.verdictName = "";
   this.userJid = "";
   this.problemJid = "";
+  this.submissionTime = 0;
 };
 
 TlxGradingModel.prototype.setId = function (id) {
@@ -43,6 +44,11 @@ TlxGradingModel.prototype.setProblemJid = function (problemJid) {
   return this;
 };
 
+TlxGradingModel.prototype.setSubmissionTime = function (submissionTime) {
+  this.submissionTime = submissionTime;
+  return this;
+};
+
 TlxGradingModel.prototype.getId = function () {
   return this.id;
 };
@@ -69,6 +75,10 @@ TlxGradingModel.prototype.getUserJid = function () {
 
 TlxGradingModel.prototype.getProblemJid = function () {
   return this.problemJid;
+};
+
+TlxGradingModel.prototype.getSubmissionTime = function () {
+  return this.submissionTime;
 };
 
 module.exports = TlxGradingModel;

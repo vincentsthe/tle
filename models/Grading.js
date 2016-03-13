@@ -7,6 +7,7 @@ var Grading = function () {
   this.evaluated = false;
   this.userId = "";
   this.problemId = "";
+  this.submissionTime = 0;
 };
 
 Grading.prototype.setId = function (id) {
@@ -49,6 +50,11 @@ Grading.prototype.setProblemId = function (problemId) {
   return this;
 };
 
+Grading.prototype.setSubmissionTime = function (submissionTime) {
+  this.submissionTime = submissionTime;
+  return this;
+};
+
 Grading.prototype.getId = function () {
   return this.id;
 };
@@ -79,6 +85,10 @@ Grading.prototype.getUserId = function () {
 
 Grading.prototype.getProblemId = function () {
   return this.problemId;
+};
+
+Grading.prototype.getSubmissionTime = function () {
+  return this.submissionTime;
 };
 
 module.exports = Grading;

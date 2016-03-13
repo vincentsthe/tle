@@ -310,10 +310,11 @@ userService.isUserAcceptedInProblem = function (userId, problemId, callback) {
   });
 };
 
-userService.markUserAcceptedInProblem = function (userId, problemId, callback) {
+userService.markUserAcceptedInProblem = function (userId, problemId, time, callback) {
   UserAcceptedSubmissionModel.create({
     userId: userId,
-    problemId: problemId
+    problemId: problemId,
+    time: time
   }).then(function (record) {
     callback(null);
   }, function (err) {
