@@ -8,7 +8,7 @@ var tlxProblemService = require('../../tlxservices/tlxProblemService');
 
 var problemMigrator = {};
 
-var saveProblem = function (problemJid, problemUrl, callback) {
+var saveProblem = function (problemJid, problemUrl, createTime, callback) {
   async.waterfall([
     function (callback) {
       tlxProblemService.getProblemByJid(problemJid, function (err, tlxProblemModel) {
@@ -21,10 +21,10 @@ var saveProblem = function (problemJid, problemUrl, callback) {
         }
       });
     }, function (tlxProblemModel, callback) {
-      problemService.insertProblem(tlxProblemModel.getId(), problemJid, tlxProblemModel.getSlug(), Math.round(tlxProblemModel.getCreateTime() / 1000),
-        problemUrl, function (err) {
+      problemService.insertProblem(tlxProblemModel.getId(), problemJid, tlxProblemModel.getSlug(), createTime, problemUrl, function (err) {
         if (err) {
           console.error(err);
+          callback(err);
         } else {
           problemRankService.insertProblemRecord(tlxProblemModel.getId(), 0, function (err) {
             callback(null);
@@ -49,7 +49,8 @@ var migrateProblemset = function (limit, callback) {
       });
     }, function (tlxProblemsetProblemModels, callback) {
       async.each(tlxProblemsetProblemModels, function (tlxProblemsetProblemModel, callback) {
-        saveProblem(tlxProblemsetProblemModel.getProblemJid(), tlxProblemsetProblemModel.getUrl(), function (err) {
+        saveProblem(tlxProblemsetProblemModel.getProblemJid(), tlxProblemsetProblemModel.getUrl(),
+          tlxProblemsetProblemModel.getCreateTime(), function (err) {
           callback(err);
         });
       }, function (err) {
@@ -85,7 +86,7 @@ var migrateCourseProblem = function (limit, callback) {
       })
     }, function (tlxCourseProblemModels, callback) {
       async.each(tlxCourseProblemModels, function (tlxCourseProblemModel, callback) {
-        saveProblem(tlxCourseProblemModel.getProblemJid(), tlxCourseProblemModel.getUrl(), function (err) {
+        saveProblem(tlxCourseProblemModel.getProblemJid(), tlxCourseProblemModel.getUrl(), tlxCourseProblemModel.getCreateTime(), function (err) {
           callback(err);
         });
       }, function (err) {

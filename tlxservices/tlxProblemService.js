@@ -62,7 +62,7 @@ tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, cal
 
 tlxProblemService.getProblemJidToProblemMap = function (problemJids, callback) {
   knexConnection.sandalphon
-    .select("id", "jid", "slug", "timeCreate")
+    .select("id", "jid", "slug")
     .from("sandalphon_problem")
     .whereIn("jid", problemJids)
     .then(function (problems) {
@@ -71,8 +71,7 @@ tlxProblemService.getProblemJidToProblemMap = function (problemJids, callback) {
         var tlxProblemModel = new TlxProblemModel();
         tlxProblemModel.setId(problem.id)
                       .setJid(problem.jid)
-                      .setSlug(problem.slug)
-                      .setCreateTime(problem.timeCreate);
+                      .setSlug(problem.slug);
 
         problemMap[problem.jid] = tlxProblemModel;
       });
@@ -95,8 +94,7 @@ tlxProblemService.getProblemByJid = function (problemJid, callback) {
         var tlxProblemModel = new TlxProblemModel();
         tlxProblemModel.setId(problem.id)
                       .setJid(problem.jid)
-                      .setSlug(problem.slug)
-                      .setCreateTime(problem.timeCreate);
+                      .setSlug(problem.slug);
 
         callback(null, tlxProblemModel);
       }

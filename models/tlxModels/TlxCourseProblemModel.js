@@ -4,6 +4,7 @@ var TlxCourseProblemModel = function () {
   this.sessionId = 0;
   this.curriculumCourseId = 0;
   this.curriculumId = 0;
+  this.createTime = 0;
 };
 
 TlxCourseProblemModel.prototype.setId = function (id) {
@@ -31,6 +32,11 @@ TlxCourseProblemModel.prototype.setCurriculumId = function (curriculumId) {
   return this;
 };
 
+TlxCourseProblemModel.prototype.setCreateTime = function (createTime) {
+  this.createTime = createTime;
+  return this;
+};
+
 TlxCourseProblemModel.prototype.getId = function () {
   return this.id;
 };
@@ -49,6 +55,10 @@ TlxCourseProblemModel.prototype.getCurriculumCourseId = function () {
 
 TlxCourseProblemModel.prototype.getCurriculumId = function () {
   return this.curriculumId;
+};
+
+TlxCourseProblemModel.prototype.getCreateTime = function () {
+  return this.createTime;
 };
 
 TlxCourseProblemModel.prototype.getUrl = function () {

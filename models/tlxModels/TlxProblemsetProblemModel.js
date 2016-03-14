@@ -2,6 +2,7 @@ var TlxProblemsetProblemModel = function () {
   this.id = 0;
   this.problemJid = "";
   this.problemsetId = 0;
+  this.createTime = 0;
 };
 
 TlxProblemsetProblemModel.prototype.setId = function (id) {
@@ -19,6 +20,11 @@ TlxProblemsetProblemModel.prototype.setProblemsetId = function (problemsetId) {
   return this;
 };
 
+TlxProblemsetProblemModel.prototype.setCreateTime = function (createTime) {
+  this.createTime = createTime;
+  return this;
+};
+
 TlxProblemsetProblemModel.prototype.getId = function () {
   return this.id;
 };
@@ -29,6 +35,10 @@ TlxProblemsetProblemModel.prototype.getProblemJid = function () {
 
 TlxProblemsetProblemModel.prototype.getProblemsetId = function () {
   return this.problemsetId;
+};
+
+TlxProblemsetProblemModel.prototype.getCreateTime = function () {
+  return this.createTime;
 };
 
 TlxProblemsetProblemModel.prototype.getUrl = function () {
