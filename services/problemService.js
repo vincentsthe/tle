@@ -1,9 +1,9 @@
 var _ = require('underscore');
 var async = require('async');
 
+var cache = require('../core/cache');
 var Problem = require('../models/Problem');
 var ProblemModel = require('../models/db/index').ProblemModel;
-var redisClient = require('../core/redisClient');
 
 var REDIS_PROBLEM_ID_PREFIX = "problem:id:";
 var REDIS_PROBLEM_EXPIRATION_TIME = 7200;
@@ -53,26 +53,12 @@ var getProblemByIdFromDb = function (id, callback) {
 problemService.getProblemById = function (id, callback) {
   var redisKey = REDIS_PROBLEM_ID_PREFIX + id;
 
-  redisClient.get(redisKey, function (err, problem) {
-    if (err) {
-      callback(err);
-    } else if (problem) {
-      problem = JSON.parse(problem);
-      redisClient.expire(redisKey, REDIS_PROBLEM_EXPIRATION_TIME);
-      callback(null, constructProblemFromPlainObject(problem));
-    } else {
-      getProblemByIdFromDb(id, function (err, problem) {
-        if (err) {
-          callback(err);
-        } else {
-          var problemString = JSON.stringify(problem);
-          redisClient.set(redisKey, problemString);
-          redisClient.expire(redisKey, REDIS_PROBLEM_EXPIRATION_TIME);
-
-          callback(null, problem);
-        }
-      });
-    }
+  cache.getUpdateCacheValue(redisKey, REDIS_PROBLEM_EXPIRATION_TIME, function (callback) {
+    getProblemByIdFromDb(id, function (err, problem) {
+      callback(err, problem);
+    });
+  }, function (err, problem) {
+    callback(err, constructProblemFromPlainObject(problem));
   });
 };
 

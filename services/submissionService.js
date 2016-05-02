@@ -1,7 +1,7 @@
 var _ = require('underscore');
 var async = require('async');
 
-var redisClient = require('../core/redisClient');
+var cache = require('../core/cache');
 
 var ProblemModel = require('../models/db/index').ProblemModel;
 var Submission = require('../models/Submission');
@@ -68,26 +68,12 @@ var getSubmissionByIdFromDb = function (id,callback) {
 submissionService.getSubmissionById = function (id, callback) {
   var redisKey = REDIS_SUBMISSION_EXPIRATION_TIME + id;
 
-  redisClient.get(redisKey, function (err, submission) {
-    if (err) {
-      callback(err);
-    } else if (submission) {
-      submission = JSON.parse(submission);
-      redisClient.expire(redisKey, REDIS_SUBMISSION_EXPIRATION_TIME);
-      callback(null, constructSubmissionFromPlainObject(submission));
-    } else {
-      getSubmissionByIdFromDb(id, function (err, submission) {
-        if (err) {
-          callback(err);
-        } else {
-          var submissionString = JSON.stringify(submission);
-          redisClient.set(redisKey, submissionString);
-          redisClient.expire(redisKey, REDIS_SUBMISSION_EXPIRATION_TIME);
-
-          callback(null, submission);
-        }
-      });
-    }
+  cache.getUpdateCacheValue(redisKey, REDIS_SUBMISSION_EXPIRATION_TIME, function (callback) {
+    getSubmissionByIdFromDb(id, function (err, submission) {
+      callback(err, submission);
+    });
+  }, function (err, submission) {
+    callback(err, constructSubmissionFromPlainObject(submission));
   });
 };
 
