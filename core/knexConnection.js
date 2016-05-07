@@ -33,4 +33,14 @@ knexConnection.sandalphon = knex({
   }
 });
 
+knexConnection.db = knex({
+  client: 'mysql',
+  connection: {
+    host: dbConfig.db.host,
+    user: dbConfig.db.user,
+    password: dbConfig.db.password,
+    database: dbConfig.db.database
+  }
+});
+
 module.exports = knexConnection;

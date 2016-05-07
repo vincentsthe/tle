@@ -2,6 +2,7 @@ var _ = require('underscore');
 var async = require('async');
 
 var cache = require('../core/cache');
+var knexConnection = require('../core/knexConnection');
 var User = require('../models/User');
 var UserModel = require('../models/db/index').UserModel;
 var UserAcceptedSubmissionModel = require('../models/db/index').UserAcceptedSubmissionModel;
@@ -159,6 +160,48 @@ userService.getLastJophielUserId = function (callback) {
   }, function (err) {
     callback(err);
   });
+};
+
+userService.getMostActiveUser = function (timeFrame, limit, callback) {
+  var time = Math.floor(Date.now() / 1000) - timeFrame;
+
+  var allSubmission = knexConnection.db
+                        .select("user.id AS user_id", knexConnection.db.raw("COUNT(submission.id) AS submission_count"))
+                        .from("user")
+                        .join("submission", "user.id", "=", "submission.user_id")
+                        .where("submission.submit_time", ">", time)
+                        .groupBy("user.id");
+
+  var acceptedSubmission = knexConnection.db
+                            .select("user.id AS user_id", knexConnection.db.raw("COUNT(submission.id) AS submission_count"))
+                            .from("user")
+                            .join("submission", "user.id", "=", "submission.user_id")
+                            .where("submission.submit_time", ">", time)
+                            .andWhere("submission.verdict_code", "=", "AC")
+                            .groupBy("user.id");
+
+  var newAcceptedSubmission = knexConnection.db
+                                .select("user.id AS user_id", knexConnection.db.raw("COUNT (user_accepted_submission.problem_id) AS problem_count"))
+                                .from("user")
+                                .join("user_accepted_submission", "user.id", "=", "user_accepted_submission.user_id")
+                                .where("time", ">", time)
+                                .groupBy("user.id");
+
+  knexConnection.db
+    .select("user.id AS user_id", "user.username AS username", "submission.submission_count AS submission_count"
+      , "accepted_submission.submission_count AS accepted_submission_count", "new_accepted_problem.problem_count AS new_accepted_problem_count")
+    .from("user")
+    .joinRaw("JOIN (" + allSubmission.toString() + ") AS submission ON user.id = submission.user_id")
+    .joinRaw("JOIN (" + acceptedSubmission.toString() + ") AS accepted_submission ON user.id = accepted_submission.user_id")
+    .joinRaw("JOIN (" + newAcceptedSubmission.toString() + ") AS new_accepted_problem ON user.id = new_accepted_problem.user_id")
+    .orderBy("new_accepted_problem_count", "DESC")
+    .orderBy("submission_count", "DESC")
+    .limit(limit)
+    .then(function (users) {
+      callback(null, users);
+    }, function (err) {
+      callback(err);
+    });
 };
 
 userService.insertUser = function (id, userJid, username, name, callback) {

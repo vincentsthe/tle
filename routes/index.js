@@ -5,27 +5,46 @@ var router = express.Router();
 var userRankService = require('../tleModuleServices/userRankService');
 var problemRankService = require('../tleModuleServices/problemRankService');
 var recentSubmissionService = require('../tleModuleServices/recentSubmissionService');
+var recentStatisticService = require('../tleModuleServices/recentStatisticService');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   var userRanks = [];
   var problemRanks = [];
   var recentSubmissions = [];
+  var newProblems = [];
+  var popularProblems = [];
+  var activeUsers = [];
 
   async.parallel([
     function (callback) {
-      userRankService.getUsersByRankRange(1, 50, function (err, users) {
+      userRankService.getUsersByRankRange(1, 20, function (err, users) {
         userRanks = users;
         callback(err);
       });
     }, function (callback) {
-      problemRankService.getProblemsByRankRange(1, 50, function (err, problems) {
+      problemRankService.getProblemsByRankRange(1, 20, function (err, problems) {
         problemRanks = problems;
         callback(err);
       });
     }, function (callback) {
       recentSubmissionService.getLatestSubmission(10, function (err, submissions) {
         recentSubmissions = submissions;
+        callback(err);
+      });
+    }, function (callback) {
+      recentStatisticService.getNewProblem(function (err, problems) {
+        newProblems = problems;
+        callback(err);
+      });
+    }, function (callback) {
+      recentStatisticService.getRecentActiveProblem(function (err, problems) {
+        popularProblems = problems;
+        callback(err);
+      });
+    }, function (callback) {
+      recentStatisticService.getRecentMostActiveUser(function (err, users) {
+        activeUsers = users;
         callback(err);
       });
     }
@@ -36,7 +55,10 @@ router.get('/', function(req, res, next) {
     res.render('index', {
       users: userRanks,
       problems: problemRanks,
-      submissions: recentSubmissions
+      submissions: recentSubmissions,
+      newProblems: newProblems,
+      popularProblems: popularProblems,
+      activeUsers: activeUsers
     });
   });
 });

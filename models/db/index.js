@@ -12,6 +12,7 @@ SubmissionModel.belongsTo(UserModel, {
   constraints: false,
   as: 'user'
 });
+
 SubmissionModel.belongsTo(ProblemModel, {
   foreignKey: 'problem_id',
   constraints: false,

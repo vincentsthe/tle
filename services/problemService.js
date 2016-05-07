@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var async = require('async');
 
+var knexConnection = require('../core/knexConnection');
 var cache = require('../core/cache');
 var Problem = require('../models/Problem');
 var ProblemModel = require('../models/db/index').ProblemModel;
@@ -96,6 +97,22 @@ problemService.getProblemByLastId = function (lastId, limit, callback) {
   });
 };
 
+problemService.getProblem = function (sortBy, order, offset, limit, callback) {
+  ProblemModel.findAll({
+    order: sortBy + " " + order,
+    offset: offset,
+    limit: limit
+  }).then(function (problemModels) {
+    var problems = _.map(problemModels, function (problemModel) {
+      return constructProblemFromModel(problemModel);
+    });
+
+    callback(null, problems);
+  }, function (err) {
+    callback(err);
+  });
+};
+
 problemService.getProblemByIds = function (problemIds, callback) {
   var problems = [];
   async.each(problemIds, function (problemId, callback) {
@@ -106,6 +123,39 @@ problemService.getProblemByIds = function (problemIds, callback) {
   }, function (err) {
     callback(err, problems);
   });
+};
+
+problemService.getProblemWithMostSubmission = function (timeFrame, limit, callback) {
+  var time = Math.floor(Date.now() / 1000) - timeFrame;
+
+  var submissionQuery = knexConnection.db
+                          .select("problem.id AS problem_id", knexConnection.db.raw("COUNT(submission.id) AS submission_count"))
+                          .from("problem")
+                          .join("submission", "problem.id", "=", "submission.problem_id")
+                          .where("submission.submit_time", ">", time)
+                          .groupBy("problem.id");
+
+  var acceptedSubmissionQuery = knexConnection.db
+                                  .select("problem.id AS problem_id", knexConnection.db.raw("COUNT(submission.id) AS submission_count"))
+                                  .from("problem")
+                                  .join("submission", "problem.id", "=", "submission.problem_id")
+                                  .where("submission.submit_time", ">", time)
+                                  .andWhere("submission.verdict_code", "=", 'AC')
+                                  .groupBy("problem.id");
+
+  knexConnection.db
+    .select("problem.id AS problem_id", "problem.slug AS problem_slug", "problem.url AS problem_url"
+      , "submission.submission_count AS submission_count" , "accepted_submission.submission_count AS accepted_submission_count")
+    .from("problem")
+    .joinRaw("JOIN (" + submissionQuery.toString() + ") AS submission ON problem.id = submission.problem_id")
+    .joinRaw("JOIN (" + acceptedSubmissionQuery.toString() + ") AS accepted_submission ON problem.id = accepted_submission.problem_id")
+    .limit(limit)
+    .orderBy("submission_count", "DESC")
+    .then(function (problems) {
+      callback(null, problems);
+    }, function (err) {
+      callback(err);
+    });
 };
 
 problemService.insertProblem = function (id, problemJid, slug, createTime, url, callback) {

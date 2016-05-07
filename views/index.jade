@@ -69,3 +69,51 @@ html
               td= user.acceptedProblem
               td= user.totalSubmission
               td= user.acceptedSubmission
+
+    hr
+    .container
+      .row
+        .col-sm-4
+          h2 New Problem
+          table.table.table-striped
+            thead
+              tr
+                th id
+                th Problem
+            tbody
+              each problem in newProblems
+                tr
+                  td= problem.id
+                  td= problem.slug
+        .col-sm-4
+          h2 Top Problem
+          table.table.table-striped
+            thead
+              tr
+                th id
+                th Problem
+                th sub
+                th AC sub
+            tbody
+              each problem in popularProblems
+                tr
+                  td= problem.problem_id
+                  td= problem.problem_slug
+                  td= problem.submission_count
+                  td= problem.accepted_submission_count
+        .col-sm-4
+          h2 Most Active User
+          table.table.table-striped
+            thead
+              tr
+                th username
+                th new AC
+                th sub
+                th AC sub
+            tbody
+              each user in activeUsers
+                tr
+                  td= user.username
+                  td= user.new_accepted_problem_count
+                  td= user.submission_count
+                  td= user.accepted_submission_count
