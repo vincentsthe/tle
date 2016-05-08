@@ -9,7 +9,8 @@ var tlxProblemService = {};
 
 tlxProblemService.fetchProblemFromJerahmeelProblemset = function (lastId, limit, callback) {
   knexConnection.jerahmeel
-    .select('problem_set_problem.id AS id', 'problem_set_problem.problemJid AS problemJid', 'problem_set.id AS problemsetId')
+    .select('problem_set_problem.id AS id', 'problem_set_problem.problemJid AS problemJid'
+      , 'problem_set_problem.timeCreate AS create_time', 'problem_set.id AS problemsetId')
     .from('jerahmeel_problem_set_problem AS problem_set_problem')
     .join('jerahmeel_problem_set AS problem_set', 'problem_set_problem.problemSetJid', '=', 'problem_set.jid')
     .where('problem_set_problem.id', '>', lastId)
@@ -19,6 +20,7 @@ tlxProblemService.fetchProblemFromJerahmeelProblemset = function (lastId, limit,
         var tlxProblemsetProblemModel = new TlxProblemsetProblemModel();
         tlxProblemsetProblemModel.setId(problemRecord.id)
                                 .setProblemJid(problemRecord.problemJid)
+                                .setCreateTime(Math.round(problemRecord.create_time / 1000))
                                 .setProblemsetId(problemRecord.problemsetId);
 
         return tlxProblemsetProblemModel;
@@ -32,7 +34,8 @@ tlxProblemService.fetchProblemFromJerahmeelProblemset = function (lastId, limit,
 
 tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, callback) {
   knexConnection.jerahmeel
-    .select('session_problem.id AS session_problem_id', 'session_problem.problemJid AS problem_jid', 'session.id AS session_id', 'curriculum_course.id AS curriculum_course_id', 'curriculum.id AS curriculum_id')
+    .select('session_problem.id AS session_problem_id', 'session_problem.problemJid AS problem_jid', 'session_problem.timeCreate AS create_time'
+      , 'session.id AS session_id', 'curriculum_course.id AS curriculum_course_id', 'curriculum.id AS curriculum_id')
     .from('jerahmeel_session_problem AS session_problem')
     .join('jerahmeel_session AS session', 'session_problem.sessionJid', '=', 'session.jid')
     .join('jerahmeel_course_session AS course_session', 'session.jid', '=', 'course_session.sessionJid')
@@ -47,6 +50,7 @@ tlxProblemService.fetchProblemFromJerahmeelCourse = function (lastId, limit, cal
         var tlxCourseProblemModel = new TlxCourseProblemModel();
         tlxCourseProblemModel.setId(problemRecord.session_problem_id)
                             .setProblemJid(problemRecord.problem_jid)
+                            .setCreateTime(Math.round(problemRecord.create_time / 1000))
                             .setSessionId(problemRecord.session_id)
                             .setCurriculumCourseId(problemRecord.curriculum_course_id)
                             .setCurriculumId(problemRecord.curriculum_id);
