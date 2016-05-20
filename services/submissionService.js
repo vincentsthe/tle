@@ -51,12 +51,18 @@ var getSubmissionByIdFromDb = function (id,callback) {
         .setVerdictName(submissionRecord.verdictName)
         .setScore(submissionRecord.score)
         .setUserId(submissionRecord.userId)
-        .setUsername(submissionRecord.user.username)
-        .setName(submissionRecord.user.name)
         .setSubmitTime(submissionRecord.submitTime)
         .setLanguage(submissionRecord.language)
-        .setProblemId(submissionRecord.problemId)
-        .setProblemSlug(submissionRecord.problem.slug);
+        .setProblemId(submissionRecord.problemId);
+
+      if (submissionRecord.user) {
+        submission.setUsername(submissionRecord.user.username)
+          .setName(submissionRecord.user.name);
+      }
+
+      if (submissionRecord.problem) {
+        submission.setProblemSlug(submissionRecord.problem.slug);
+      }
 
       callback(null, submission);
     }
@@ -179,25 +185,14 @@ submissionService.getSubmissionByLastId = function (lastId, limit, callback) {
   }).then(function (submissionRecords) {
     var submissions = [];
     submissionRecords.forEach(function (submissionRecord) {
-      var submission = new Submission();
-      submission.setId(submissionRecord.id)
-        .setSubmissionJid(submissionRecord.submissionJid)
-        .setVerdictCode(submissionRecord.verdictCode)
-        .setVerdictName(submissionRecord.verdictName)
-        .setScore(submissionRecord.score)
-        .setUserId(submissionRecord.userId)
-        .setUsername(submissionRecord.user.username)
-        .setName(submissionRecord.user.name)
-        .setSubmitTime(submissionRecord.submitTime)
-        .setLanguage(submissionRecord.language)
-        .setProblemId(submissionRecord.problemId)
-        .setProblemSlug(submissionRecord.problem.slug);
+      var submission = constructSubmissionFromPlainObject(submissionRecord);
 
       submissions.push(submission);
     });
 
     callback(null, submissions);
   }, function (err) {
+    console.dir(err);
     callback(err);
   });
 };

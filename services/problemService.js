@@ -1,13 +1,18 @@
 var _ = require('underscore');
 var async = require('async');
+var ReadWriteLock = require('rwlock');
 
 var knexConnection = require('../core/knexConnection');
 var cache = require('../core/cache');
 var Problem = require('../models/Problem');
 var ProblemModel = require('../models/db/index').ProblemModel;
+var ProblemStatisticModel = require('../models/db/index').ProblemStatisticModel;
 
+var LOCK_PROBLEM_STATISTIC_KEY = "problem:statistic:lock:id:";
 var REDIS_PROBLEM_ID_PREFIX = "problem:id:";
 var REDIS_PROBLEM_EXPIRATION_TIME = 7200;
+
+var lock = new ReadWriteLock();
 
 var problemService = {};
 
@@ -17,10 +22,17 @@ var constructProblemFromModel = function (problemModel) {
         .setProblemJid(problemModel.problemJid)
         .setSlug(problemModel.slug)
         .setCreateTime(problemModel.createTime)
-        .setAcceptedUser(problemModel.acceptedUser)
-        .setTotalSubmission(problemModel.totalSubmission)
-        .setAcceptedSubmission(problemModel.acceptedSubmission)
         .setUrl(problemModel.url);
+
+  if (problemModel.statistic) {
+    problem.setAcceptedUser(problemModel.statistic.acceptedUser)
+      .setTotalSubmission(problemModel.statistic.totalSubmission)
+      .setAcceptedSubmission(problemModel.statistic.acceptedSubmission);
+  } else {
+    problem.setAcceptedUser(0)
+      .setTotalSubmission(0)
+      .setAcceptedSubmission(0);
+  }
 
   return problem;
 };
@@ -42,7 +54,10 @@ var getProblemByIdFromDb = function (id, callback) {
   ProblemModel.findOne({
     where: {
       id: id
-    }
+    },
+    include: [
+      {model: ProblemStatisticModel, as: 'statistic'}
+    ]
   }).then(function (problemRecord) {
     var problem = constructProblemFromModel(problemRecord);
     callback(null, problem);
@@ -85,7 +100,10 @@ problemService.getProblemByLastId = function (lastId, limit, callback) {
         $gt: lastId
       }
     },
-    limit: limit
+    limit: limit,
+    include: [
+      {model: ProblemStatisticModel, as: 'statistic'}
+    ]
   }).then(function (problemRecords) {
     var problems = _.map(problemRecords, function (problemRecord) {
       return constructProblemFromModel(problemRecord);
@@ -101,7 +119,10 @@ problemService.getProblem = function (sortBy, order, offset, limit, callback) {
   ProblemModel.findAll({
     order: sortBy + " " + order,
     offset: offset,
-    limit: limit
+    limit: limit,
+    include: [
+      {model: ProblemStatisticModel, as: 'statistic'}
+    ]
   }).then(function (problemModels) {
     var problems = _.map(problemModels, function (problemModel) {
       return constructProblemFromModel(problemModel);
@@ -164,10 +185,7 @@ problemService.insertProblem = function (id, problemJid, slug, createTime, url, 
     problemJid: problemJid,
     slug: slug,
     createTime: createTime,
-    url: url,
-    acceptedUser: 0,
-    totalSubmission: 0,
-    acceptedSubmission: 0
+    url: url
   }).then(function () {
     callback();
   }, function (err) {
@@ -176,68 +194,95 @@ problemService.insertProblem = function (id, problemJid, slug, createTime, url, 
 };
 
 problemService.incrementSubmissionCount = function (problemId, count, callback) {
-  ProblemModel.findOne({
-    where: {
-      id: problemId
-    }
-  }).then(function (problem) {
-    if (problem) {
-      problem.update({
-        totalSubmission: problem.totalSubmission + count
-      }).then(function () {
-        callback(null);
-      }, function (err) {
-        callback(err);
-      });
-    } else {
+  var key = LOCK_PROBLEM_STATISTIC_KEY + problemId;
+
+  lock.writeLock(key, function (release) {
+    ProblemStatisticModel.findOne({
+      where: {
+        problemId: problemId
+      }
+    }).then(function (statistic) {
+      if (statistic) {
+        return statistic.update({
+          totalSubmission: statistic.totalSubmission + count
+        });
+      } else {
+        return ProblemStatisticModel.create({
+          problemId: problemId,
+          acceptedUser: 0,
+          totalSubmission: count,
+          acceptedSubmission: 0
+        });
+      }
+    }).then(function () {
+      release();
       callback(null);
-    }
-  }, function (err) {
-    callback(err);
+    }, function (err) {
+      release();
+      callback(err);
+    });
   });
 };
 
 problemService.incrementAcceptedSubmissionCount = function (problemId, count, callback) {
-  ProblemModel.findOne({
-    where: {
-      id: problemId
-    }
-  }).then(function (problem) {
-    if (problem) {
-      problem.update({
-        acceptedSubmission: problem.acceptedSubmission + count
-      }).then(function () {
-        callback(null);
-      }, function (err) {
-        callback(err);
-      });
-    } else {
+  var key = LOCK_PROBLEM_STATISTIC_KEY + problemId;
+
+  lock.writeLock(key, function (release) {
+    ProblemStatisticModel.findOne({
+      where: {
+        problemId: problemId
+      }
+    }).then(function (statistic) {
+      if (statistic) {
+        return statistic.update({
+          acceptedSubmission: statistic.acceptedSubmission + count
+        });
+      } else {
+        return ProblemStatisticModel.create({
+          problemId: problemId,
+          acceptedUser: 0,
+          totalSubmission: 0,
+          acceptedSubmission: count
+        });
+      }
+    }).then(function () {
+      release();
       callback(null);
-    }
-  }, function (err) {
-    callback(err);
+    }, function (err) {
+      release();
+      callback(err);
+    });
   });
 };
 
 problemService.incrementAcceptedUserCount = function (problemId, count, callback) {
-  ProblemModel.findOne({
-    where: {
-      id: problemId
-    }
-  }).then(function (problem) {
-    if (problem) {
-      problem.update({
-        acceptedUser: problem.acceptedUser + count
-      }).then(function () {
-        callback(null);
-      }, function (err) {
-        callback(err);
-      });
-    } else {
+  var key = LOCK_PROBLEM_STATISTIC_KEY + problemId;
+
+  lock.writeLock(key, function (release) {
+    ProblemStatisticModel.findOne({
+      where: {
+        problemId: problemId
+      }
+    }).then(function (statistic) {
+      if (statistic) {
+        return statistic.update({
+          acceptedUser: statistic.acceptedUser + count
+        });
+      } else {
+        return ProblemStatisticModel.create({
+          problemId: problemId,
+          acceptedUser: count,
+          totalSubmission: 0,
+          acceptedSubmission: 0
+        });
+      }
+    }).then(function () {
+      release();
       callback(null);
-    }
-  }, function (err) {
-    callback(err);
+    }, function (err) {
+      release();
+      callback(err);
+    });
   });
 };
 

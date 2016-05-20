@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 13, 2016 at 07:02 PM
+-- Generation Time: May 20, 2016 at 11:03 AM
 -- Server version: 5.6.25-log
 -- PHP Version: 5.5.31
 
@@ -61,10 +61,20 @@ CREATE TABLE IF NOT EXISTS `problem` (
   `problem_jid` varchar(255) NOT NULL,
   `slug` varchar(255) NOT NULL,
   `create_time` int(11) NOT NULL,
-  `accepted_user` int(11) NOT NULL,
-  `total_submission` int(11) NOT NULL,
-  `accepted_submission` int(11) NOT NULL,
   `url` varchar(512) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `problem_statistic`
+--
+
+CREATE TABLE IF NOT EXISTS `problem_statistic` (
+  `problem_id` int(11) NOT NULL,
+  `accepted_user` int(11) NOT NULL DEFAULT '0',
+  `total_submission` int(11) NOT NULL DEFAULT '0',
+  `accepted_submission` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -95,10 +105,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `id` int(11) NOT NULL,
   `user_jid` varchar(255) NOT NULL,
   `username` varchar(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `accepted_submission` int(11) NOT NULL,
-  `total_submission` int(11) NOT NULL,
-  `accepted_problem` int(11) NOT NULL
+  `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -116,13 +123,14 @@ CREATE TABLE IF NOT EXISTS `user_accepted_submission` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `verdict`
+-- Table structure for table `user_statistic`
 --
 
-CREATE TABLE IF NOT EXISTS `verdict` (
-  `id` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `alias` varchar(64) NOT NULL
+CREATE TABLE IF NOT EXISTS `user_statistic` (
+  `user_id` int(11) NOT NULL,
+  `accepted_submission` int(11) NOT NULL DEFAULT '0',
+  `total_submission` int(11) NOT NULL DEFAULT '0',
+  `accepted_problem` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -151,6 +159,12 @@ ALTER TABLE `problem`
   ADD KEY `problem_jid` (`problem_jid`);
 
 --
+-- Indexes for table `problem_statistic`
+--
+ALTER TABLE `problem_statistic`
+  ADD PRIMARY KEY (`problem_id`);
+
+--
 -- Indexes for table `submission`
 --
 ALTER TABLE `submission`
@@ -171,10 +185,10 @@ ALTER TABLE `user_accepted_submission`
   ADD PRIMARY KEY (`problem_id`,`user_id`);
 
 --
--- Indexes for table `verdict`
+-- Indexes for table `user_statistic`
 --
-ALTER TABLE `verdict`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `user_statistic`
+  ADD PRIMARY KEY (`user_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -184,11 +198,6 @@ ALTER TABLE `verdict`
 -- AUTO_INCREMENT for table `last_id`
 --
 ALTER TABLE `last_id`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `verdict`
---
-ALTER TABLE `verdict`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

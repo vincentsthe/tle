@@ -1,16 +1,21 @@
 var _ = require('underscore');
 var async = require('async');
+var ReadWriteLock = require('rwlock');
 
 var cache = require('../core/cache');
 var knexConnection = require('../core/knexConnection');
 var User = require('../models/User');
-var UserModel = require('../models/db/index').UserModel;
 var UserAcceptedSubmissionModel = require('../models/db/index').UserAcceptedSubmissionModel;
+var UserModel = require('../models/db/index').UserModel;
+var UserStatisticModel = require('../models/db/index').UserStatisticModel;
 
+var LOCK_USER_STATISTIC_KEY = "user:statistic:lock:id:";
 var REDIS_USER_ID_PREFIX = "user:id:";
 var REDIS_USER_SOLVED_PROBLEM_PREFIX = "user:problem:solved:id:";
 var REDIS_USER_EXPIRATION_TIME = 1800;
 var REDIS_USER_SOLVED_PROBLEM_EXPIRATION_TIME = 7200;
+
+var lock = new ReadWriteLock();
 
 var userService = {};
 
@@ -19,10 +24,17 @@ var constructUserFromModel = function (userModel) {
   user.setId(userModel.id)
       .setUserJid(userModel.userJid)
       .setUsername(userModel.username)
-      .setName(userModel.name)
-      .setAcceptedSubmission(userModel.acceptedSubmission)
-      .setTotalSubmission(userModel.totalSubmission)
-      .setAcceptedProblem(userModel.acceptedProblem);
+      .setName(userModel.name);
+
+  if (userModel.statistic) {
+    user.setAcceptedSubmission(userModel.statistic.acceptedSubmission)
+      .setTotalSubmission(userModel.statistic.totalSubmission)
+      .setAcceptedProblem(userModel.statistic.acceptedProblem);
+  } else {
+    user.setAcceptedSubmission(0)
+      .setTotalSubmission(0)
+      .setAcceptedProblem(0);
+  }
 
   return user;
 };
@@ -44,7 +56,10 @@ var getUserByIdFromDb = function (id, callback) {
   UserModel.findOne({
     where: {
       id: id
-    }
+    },
+    include: [
+      {model: UserStatisticModel, as: 'statistic'}
+    ]
   }).then(function (user) {
     callback(null, constructUserFromModel(user));
   }, function (err) {
@@ -56,7 +71,10 @@ var getUserSolvedProblemIdsFromDb = function (userId, callback) {
   UserAcceptedSubmissionModel.findAll({
     where: {
       userId: userId
-    }
+    },
+    include: [
+      {model: UserStatisticModel, as: 'statistic'}
+    ]
   }).then(function (records) {
     var problemIds = _.map(records, function (record) {
       return record.problemId;
@@ -84,7 +102,10 @@ userService.getUserByUsername = function (username, callback) {
   UserModel.findOne({
     where: {
       username: username
-    }
+    },
+    include: [
+      {model: UserStatisticModel, as: 'statistic'}
+    ]
   }).then(function (userModel) {
     callback(null, userModel);
   }, function (err) {
@@ -138,7 +159,10 @@ userService.getUserByLastId = function (lastId, limit, callback) {
         $gt: lastId
       }
     },
-    limit: limit
+    limit: limit,
+    include: [
+      {model: UserStatisticModel, as: 'statistic'}
+    ]
   }).then(function (userModels) {
     var users = _.map(userModels, function (userModel) {
       return constructUserFromModel(userModel);
@@ -209,13 +233,11 @@ userService.insertUser = function (id, userJid, username, name, callback) {
     id: id,
     userJid: userJid,
     username: username,
-    name: name,
-    acceptedSubmission: 0,
-    totalSubmission: 0,
-    acceptedProblem: 0
+    name: name
   }).then(function () {
     callback(null);
   }, function (err) {
+    console.dir(err);
     callback(err);
   });
 };
@@ -243,68 +265,95 @@ userService.changeName = function (userJid, name, callback) {
 };
 
 userService.incrementSubmissionCount = function (userId, count, callback) {
-  UserModel.findOne({
-    where: {
-      id: userId
-    }
-  }).then(function (user) {
-    if (user) {
-      user.update({
-        totalSubmission: user.totalSubmission + count
-      }).then(function () {
-        callback(null);
-      }, function (err) {
-        callback(err);
-      });
-    } else {
+  var key = LOCK_USER_STATISTIC_KEY + userId;
+
+  lock.writeLock(key, function (release) {
+    UserStatisticModel.findOne({
+      where: {
+        userId: userId
+      }
+    }).then(function (statistic) {
+      if (statistic) {
+        return statistic.update({
+          totalSubmission: statistic.totalSubmission + count
+        });
+      } else {
+        return UserStatisticModel.create({
+          userId: userId,
+          totalSubmission: count,
+          acceptedSubmission: 0,
+          acceptedProblem: 0
+        });
+      }
+    }).then(function () {
+      release();
       callback(null);
-    }
-  }, function (err) {
-    callback(err);
+    }, function (err) {
+      release();
+      callback(err);
+    });
   });
 };
 
 userService.incrementAcceptedSubmissionCount = function (userId, count, callback) {
-  UserModel.findOne({
-    where: {
-      id: userId
-    }
-  }).then(function (user) {
-    if (user) {
-      user.update({
-        acceptedSubmission: user.acceptedSubmission + count
-      }).then(function () {
-        callback(null);
-      }, function (err) {
-        callback(err);
-      });
-    } else {
+  var key = LOCK_USER_STATISTIC_KEY + userId;
+
+  lock.writeLock(key, function (release) {
+    UserStatisticModel.findOne({
+      where: {
+        userId: userId
+      }
+    }).then(function (statistic) {
+      if (statistic) {
+        return statistic.update({
+          acceptedSubmission: statistic.acceptedSubmission + count
+        });
+      } else {
+        return UserStatisticModel.create({
+          userId: userId,
+          totalSubmission: 0,
+          acceptedSubmission: count,
+          acceptedProblem: 0
+        });
+      }
+    }).then(function () {
+      release();
       callback(null);
-    }
-  }, function (err) {
-    callback(err);
+    }, function (err) {
+      release();
+      callback(err);
+    });
   });
 };
 
 userService.incrementAcceptedProblemCount = function (userId, count, callback) {
-  UserModel.findOne({
-    where: {
-      id: userId
-    }
-  }).then(function (user) {
-    if (user) {
-      user.update({
-        acceptedProblem: user.acceptedProblem + count
-      }).then(function () {
-        callback(null);
-      }, function (err) {
-        callback(err);
-      });
-    } else {
+  var key = LOCK_USER_STATISTIC_KEY + userId;
+
+  lock.writeLock(key, function (release) {
+    UserStatisticModel.findOne({
+      where: {
+        userId: userId
+      }
+    }).then(function (statistic) {
+      if (statistic) {
+        return statistic.update({
+          acceptedProblem: statistic.acceptedProblem + count
+        });
+      } else {
+        return UserStatisticModel.create({
+          userId: userId,
+          totalSubmission: 0,
+          acceptedSubmission: 0,
+          acceptedProblem: count
+        });
+      }
+    }).then(function () {
+      release();
       callback(null);
-    }
-  }, function (err) {
-    callback(err);
+    }, function (err) {
+      release();
+      callback(err);
+    });
   });
 };
 

@@ -18,18 +18,6 @@ var ProblemModel = sequelizeConnection.define('problem', {
     type: sequelize.INTEGER,
     field: 'create_time'
   },
-  acceptedUser: {
-    type: sequelize.INTEGER,
-    field: 'accepted_user'
-  },
-  totalSubmission: {
-    type: sequelize.INTEGER,
-    field: 'total_submission'
-  },
-  acceptedSubmission: {
-    type: sequelize.INTEGER,
-    field: 'accepted_submission'
-  },
   url: {
     type: sequelize.STRING
   }
