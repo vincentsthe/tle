@@ -32,7 +32,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cors());
+app.use(cors({
+  origin: config.frontEndUrl || '*'
+}));
 
 app.use('/', routes);
 app.use('/user', user);

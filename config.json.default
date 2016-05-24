@@ -1,5 +1,6 @@
 {
   "port": 3000,
+  "frontEndUrl": "http://localhost:3001",
   "database" : {
     "db": {
       "host": "localhost",
