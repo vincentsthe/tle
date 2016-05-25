@@ -24,7 +24,7 @@ var saveProblem = function (problemJid, problemUrl, createTime, callback) {
       problemService.insertProblem(tlxProblemModel.getId(), problemJid, tlxProblemModel.getSlug(), createTime, problemUrl, function (err) {
         if (err) {
           console.error(err);
-          callback(err);
+          callback(null);
         } else {
           problemRankService.insertProblemRecord(tlxProblemModel.getId(), 0, function (err) {
             callback(null);
